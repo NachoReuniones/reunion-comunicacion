@@ -725,7 +725,7 @@
                     e.preventDefault();
                     target.querySelectorAll('.tema-item').forEach(el => el.classList.remove('drag-over'));
 
-                    const temaId = e.dataTransfer.getData('temaId');
+                    const temaId = parseFloat(e.dataTransfer.getData('temaId'));
                     const tema = state.temas.find(t => t.id === temaId);
 
                     if (tema) {
