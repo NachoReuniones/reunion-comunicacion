@@ -1,0 +1,2677 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luctron · Reuniones de Ventas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --c-dark:#000000;--c-midnight:#0F0F0F;--c-deep-blue:#0C2136;--c-misty-blue:#3E688F;
+  --c-white:#FFFFFF;--c-light-gray:#E8E8E8;--c-medium-gray:#B0B0B0;
+  --bg:#F2F2F2;--surface:#FFFFFF;--surface-2:#FAFAFA;--surface-hover:#F6F6F6;
+  --feature-bg:#0C2136;
+  --border:#E4E4E4;--border-soft:#EDEDED;--border-strong:#D8D8D8;
+  --text:#0F0F0F;--text-2:#2A2A2A;--muted:#6B6B6B;--muted-2:#9A9A9A;
+  --on-dark:#FFFFFF;--on-dark-muted:#B7C3D1;
+  --accent:#0C2136;--accent-2:#3E688F;--accent-soft:#ECF1F7;
+  --verde:#2E7A4F;--verde-bg:#E8F4ED;--verde-border:#B8DCC4;
+  --amarillo:#B07410;--amarillo-bg:#FCF3DE;--amarillo-border:#ECD79B;
+  --rojo:#B33B3A;--rojo-bg:#FDECEC;--rojo-border:#F5C9C8;
+  --azul-st:#3E688F;--azul-st-bg:#E8EEF5;--azul-st-border:#BACBDF;
+  --font:"Inter","Segoe UI",-apple-system,Arial,sans-serif;
+  --radius:14px;--radius-sm:10px;--radius-xs:6px;--pill:999px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased;letter-spacing:-0.005em}
+
+header{background:var(--feature-bg);color:var(--on-dark);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+header h1{font-size:17px;font-weight:700;letter-spacing:-0.3px}
+header .right{display:flex;align-items:center;gap:14px;font-size:12px}
+header .ts{color:var(--on-dark-muted)}
+
+.btn{padding:7px 16px;border-radius:var(--pill);border:0;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;transition:all .12s;display:inline-flex;align-items:center;gap:6px}
+.btn-refresh{background:var(--c-white);color:var(--c-deep-blue)}
+.btn-refresh:hover{background:var(--c-light-gray)}
+.btn-save{background:var(--verde);color:#fff}
+.btn-save:hover{background:#256640}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface-hover);border-color:var(--border-strong)}
+
+.tabs{background:var(--surface);display:flex;padding:0 28px;border-bottom:1px solid var(--border);overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.tab{padding:13px 20px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);border:0;background:transparent;border-bottom:3px solid transparent;font-family:inherit;white-space:nowrap;transition:color .12s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.tab .dot{display:inline-block;width:7px;height:7px;border-radius:var(--pill);margin-right:7px;vertical-align:middle}
+.tab[data-key="facundo_oroza"] .dot{background:var(--accent-2)}
+.tab[data-key="federico_caffarelli"] .dot{background:var(--verde)}
+.tab[data-key="lucas_luna"] .dot{background:var(--amarillo)}
+.tab[data-key="inx2_nacho"] .dot{background:#6d4aad}
+.tab[data-key="overview"] .dot{background:var(--muted)}
+
+.toast{position:fixed;bottom:20px;right:20px;background:var(--c-midnight);color:#fff;padding:12px 20px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;z-index:1000;box-shadow:0 12px 28px rgba(0,0,0,.18);transition:all .2s;opacity:0;transform:translateY(16px)}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.error{background:var(--rojo)}
+.toast.success{background:var(--verde)}
+
+.panel{display:none;padding:24px 28px}
+.panel.active{display:block}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:var(--surface);border-radius:var(--radius-sm);padding:14px 16px;border:1px solid var(--border);border-left:3px solid var(--border-strong)}
+.kpi .lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
+.kpi .val{font-size:20px;font-weight:700;color:var(--text);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-0.3px}
+.kpi .sub{font-size:11px;color:var(--muted-2);margin-top:4px}
+.kpi.green{border-left-color:var(--verde)} .kpi.green .val{color:var(--verde)}
+.kpi.amber{border-left-color:var(--amarillo)} .kpi.amber .val{color:var(--amarillo)}
+.kpi.red{border-left-color:var(--rojo)} .kpi.red .val{color:var(--rojo)}
+.kpi.blue{border-left-color:var(--accent-2)} .kpi.blue .val{color:var(--accent-2)}
+
+.grid-2{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-bottom:20px}
+.grid-2-eq{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.section{background:var(--surface);border-radius:var(--radius);padding:18px 20px;border:1px solid var(--border)}
+.section-title{font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;letter-spacing:-0.1px}
+.section-title .sub{font-size:11px;color:var(--muted);font-weight:400}
+
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--surface);padding:7px 10px;text-align:right;font-weight:600;color:var(--muted);border-bottom:1px solid var(--border-soft);white-space:nowrap;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+th:first-child{text-align:left}
+td{padding:7px 10px;text-align:right;border-bottom:1px solid var(--border-soft);color:var(--text-2);font-variant-numeric:tabular-nums}
+td:first-child{text-align:left;font-weight:500;color:var(--text)}
+tr:hover td{background:var(--surface-hover)}
+.trend-up{color:var(--verde);font-weight:600}
+.trend-down{color:var(--rojo);font-weight:600}
+.trend-flat{color:var(--muted-2);font-weight:500}
+
+/* Checklist + Notes */
+.checklist{list-style:none;padding:0;max-height:340px;overflow-y:auto;padding-right:4px}
+.checklist li{display:flex;align-items:start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-soft)}
+.checklist li:last-child{border-bottom:0}
+.checklist input[type=checkbox]{margin-top:3px;width:15px;height:15px;cursor:pointer;flex-shrink:0;accent-color:var(--verde)}
+.checklist .item-text{flex:1;font-size:13px}
+.checklist .item-text textarea{width:100%;border:0;background:transparent;font-family:inherit;font-size:13px;color:var(--text);resize:none;overflow:hidden;line-height:1.5;padding:0;min-height:20px}
+.checklist .item-text textarea:focus{outline:1px solid var(--border-strong);border-radius:var(--radius-xs);padding:2px 4px;background:var(--surface-2)}
+.checklist .item-del{cursor:pointer;color:var(--border-strong);background:0;border:0;font-size:16px;padding:0 4px}
+.checklist .item-del:hover{color:var(--rojo)}
+.checklist li.done .item-text textarea{text-decoration:line-through;color:var(--muted)}
+.checklist-done-title{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--muted-2);letter-spacing:.06em;padding:2px 0 4px}
+.checklist.checklist-done{opacity:.7}
+.checklist.checklist-done .done-item{display:flex;align-items:center;gap:6px;padding:3px 4px;border-radius:4px}
+.checklist.checklist-done .done-item:hover{background:var(--surface-2)}
+.checklist.checklist-done .done-check{cursor:pointer;font-size:13px;color:var(--muted);flex-shrink:0;line-height:1;padding:2px 3px;border-radius:3px}
+.checklist.checklist-done .done-check:hover{color:var(--accent-2);background:var(--azul-bg,#eff6ff)}
+.checklist.checklist-done .done-text{font-size:12px;color:var(--muted);text-decoration:line-through}
+.add-item{margin-top:10px;display:flex;gap:6px}
+.add-item input{flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:12.5px;background:var(--bg);color:var(--text)}
+.add-item input:focus{outline:0;border-color:var(--accent-2);background:var(--surface)}
+.add-item button{padding:7px 14px;background:var(--c-midnight);color:#fff;border:0;border-radius:var(--pill);font-weight:600;cursor:pointer;font-family:inherit;font-size:12px}
+
+textarea{width:100%;min-height:120px;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-family:inherit;font-size:13px;resize:vertical;line-height:1.5;background:var(--bg);color:var(--text)}
+textarea:focus{outline:0;border-color:var(--accent-2);background:var(--surface)}
+
+/* Rich text editor */
+.rte-wrap{border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);overflow:hidden}
+.rte-wrap:focus-within{border-color:var(--accent-2);background:var(--surface)}
+.rte-toolbar{display:flex;flex-wrap:wrap;gap:2px;padding:5px 8px;background:var(--surface-2);border-bottom:1px solid var(--border);align-items:center}
+.rte-btn{background:0;border:1px solid transparent;border-radius:4px;padding:3px 7px;cursor:pointer;font-size:13px;color:var(--text);font-family:inherit;line-height:1;transition:background .1s}
+.rte-btn:hover{background:var(--surface-hover);border-color:var(--border)}
+.rte-btn.active{background:#dbeafe;border-color:#93c5fd;color:#1d4ed8}
+.rte-sep{width:1px;height:18px;background:var(--border);margin:0 3px}
+.rte-select{font-size:12px;padding:3px 5px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text);font-family:inherit;cursor:pointer}
+.rte-color-wrap{position:relative;display:inline-flex;align-items:center}
+.rte-color-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:0;border:1px solid transparent;border-radius:4px;padding:3px 6px;cursor:pointer;font-size:12px;font-weight:700;color:var(--text);line-height:1;transition:background .1s}
+.rte-color-btn:hover{background:var(--surface-hover);border-color:var(--border)}
+.rte-color-bar{height:3px;width:16px;border-radius:2px;transition:background .15s}
+.rte-color-input{position:absolute;width:0;height:0;opacity:0;pointer-events:none}
+.rte-palette{display:none;position:absolute;top:calc(100% + 4px);left:0;z-index:200;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px;box-shadow:0 4px 16px rgba(0,0,0,.12);gap:4px;flex-wrap:wrap;width:148px}
+.rte-palette.open{display:flex}
+.rte-palette-swatch{width:20px;height:20px;border-radius:4px;cursor:pointer;border:2px solid transparent;transition:transform .1s,border-color .1s}
+.rte-palette-swatch:hover{transform:scale(1.15);border-color:var(--border-strong)}
+.rte-palette-custom{display:flex;align-items:center;gap:4px;width:100%;margin-top:2px;padding-top:4px;border-top:1px solid var(--border)}
+.rte-palette-custom label{font-size:11px;color:var(--muted);cursor:pointer;white-space:nowrap}
+.rte-palette-custom input[type=color]{width:22px;height:22px;padding:0;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:none}
+.rte-body{min-height:110px;max-height:260px;overflow-y:auto;padding:10px 12px;font-size:13px;line-height:1.6;outline:0;color:var(--text);transition:background .15s,border-color .15s}
+.rte-body:empty:before{content:attr(data-placeholder);color:var(--muted-2);pointer-events:none}
+.rte-body.drag-over{background:var(--azul-bg,#eff6ff);outline:2px dashed var(--accent-2,#3b82f6);outline-offset:-2px}
+.checklist li{cursor:default}
+.checklist li .drag-handle{cursor:grab;color:var(--muted-2);font-size:14px;padding:0 4px 0 0;flex-shrink:0;user-select:none;line-height:1}
+.checklist li .drag-handle:active{cursor:grabbing}
+.checklist li.drag-target-above{border-top:2px solid var(--accent-2,#3b82f6)}
+.checklist li.drag-target-below{border-bottom:2px solid var(--accent-2,#3b82f6)}
+.checklist li.dragging{opacity:.4}
+.rte-body ul,.rte-body ol{padding-left:20px}
+.rte-body blockquote{border-left:3px solid var(--border-strong);margin:4px 0;padding-left:10px;color:var(--muted)}
+
+.context-strip{background:var(--amarillo-bg);border:1px solid var(--amarillo-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:11.5px;color:var(--amarillo);margin-bottom:18px;line-height:1.5}
+.context-strip b{color:var(--text)}
+
+.history{margin-top:14px}
+.history-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-xs);font-size:12px;transition:background .1s}
+.history-item:hover{background:var(--surface-hover)}
+.history-item input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--rojo);flex-shrink:0}
+.history-item.selected{background:#fee2e2}
+.history-item .date{font-weight:700;color:var(--accent);cursor:pointer}
+.history-item .date:hover{text-decoration:underline}
+.history-item .when{color:var(--muted-2);font-size:11px;cursor:pointer}
+.history-del-bar{display:flex;align-items:center;gap:10px;margin-top:8px;padding:6px 10px;background:#fee2e2;border:1px solid #fca5a5;border-radius:var(--radius-sm)}
+.history-del-bar span{font-size:12px;color:#b91c1c;flex:1}
+.history-del-bar button{font-size:12px;padding:4px 12px;background:#ef4444;color:#fff;border:0;border-radius:4px;cursor:pointer;font-family:inherit}
+.history-del-bar button:hover{background:#dc2626}
+.history-del-bar .btn-cancel{background:transparent;color:#b91c1c;border:1px solid #fca5a5}
+.history-del-bar .btn-cancel:hover{background:#fecaca}
+
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:999}
+#modal.show{display:flex}
+#modal .box{background:var(--surface);border-radius:var(--radius);max-width:760px;width:90%;max-height:80vh;overflow-y:auto;padding:24px;box-shadow:0 16px 48px rgba(0,0,0,.12)}
+#modal .box h3{font-size:15px;font-weight:600;margin-bottom:16px;color:var(--text)}
+#modal .close{float:right;background:0;border:0;font-size:20px;cursor:pointer;color:var(--muted)}
+.rview{font-size:13px;line-height:1.7;color:var(--text)}
+.rview-meta{display:flex;gap:16px;flex-wrap:wrap;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:18px;font-size:12px;color:var(--muted)}
+.rview-meta b{color:var(--text);font-weight:600}
+.rview-section{margin-bottom:18px}
+.rview-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:10px}
+.rview-kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px}
+.rview-kpi{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 10px;font-size:12px}
+.rview-kpi .kpi-label{color:var(--muted);font-size:11px;margin-bottom:1px}
+.rview-kpi .kpi-val{font-weight:600;color:var(--text)}
+.rview-checklist{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px}
+.rview-checklist li{display:flex;align-items:flex-start;gap:8px;font-size:13px;line-height:1.5}
+.rview-checklist .ci{width:14px;height:14px;border-radius:3px;border:1.5px solid var(--border);flex-shrink:0;margin-top:2px;display:inline-flex;align-items:center;justify-content:center;font-size:10px}
+.rview-checklist .ci.done{background:#22c55e;border-color:#22c55e;color:#fff}
+.rview-richtext{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;min-height:36px}
+.rview-richtext ul,.rview-richtext ol{padding-left:20px;margin:4px 0}
+.rview-richtext li{margin:2px 0}
+.rview-empty{color:var(--muted-2);font-style:italic;font-size:12px}
+.rview-kpi-row{display:grid;gap:8px;margin-bottom:8px}
+.rview-kpi-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px}
+.rview-kpi-card.total{border-color:var(--border-strong);background:var(--surface)}
+.rview-kpi-card .kc-name{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rview-kpi-card .kc-amounts{display:flex;align-items:baseline;gap:4px;margin-bottom:6px;flex-wrap:wrap}
+.rview-kpi-card .kc-actual{font-size:17px;font-weight:700;color:var(--text)}
+.rview-kpi-card .kc-sep{font-size:12px;color:var(--muted-2)}
+.rview-kpi-card .kc-target{font-size:12px;color:var(--muted)}
+.rview-kpi-card .kc-pct{font-size:12px;font-weight:700;margin-left:auto}
+.rview-kpi-card .kc-pct.green{color:#16a34a}
+.rview-kpi-card .kc-pct.amber{color:#d97706}
+.rview-kpi-card .kc-pct.red{color:#dc2626}
+.rview-kpi-card .kc-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:2px}
+.rview-kpi-card .kc-fill{height:100%;border-radius:3px;transition:width .3s}
+.rview-kpi-card .kc-fill.green{background:#22c55e}
+.rview-kpi-card .kc-fill.amber{background:#f59e0b}
+.rview-kpi-card .kc-fill.red{background:#ef4444}
+.rview-ytd-row{display:grid;gap:8px}
+.rview-ytd-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.rview-ytd-card.total{border-color:var(--border-strong);background:var(--surface)}
+.rview-ytd-card .yc-name{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.rview-ytd-card .yc-val{font-size:16px;font-weight:700;color:var(--text)}
+
+/* Modal de eventos */
+#modal-eventos{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-start;justify-content:center;z-index:1000;padding-top:48px}
+#modal-eventos.show{display:flex}
+#modal-eventos .ev-box{background:var(--surface);border-radius:var(--radius);width:min(700px,95vw);max-height:80vh;overflow-y:auto;padding:24px;box-shadow:0 16px 48px rgba(0,0,0,.12)}
+#modal-eventos h3{font-size:15px;font-weight:600;color:var(--text);margin:0 0 16px}
+.ev-row{display:grid;grid-template-columns:110px 1fr 100px 130px 36px;gap:8px;align-items:center;margin-bottom:8px}
+.ev-row input,.ev-row select{font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius-xs);width:100%;font-family:inherit;background:var(--bg);color:var(--text)}
+.ev-row input:focus,.ev-row select:focus{outline:0;border-color:var(--accent-2);background:var(--surface)}
+.ev-row .btn-del{background:var(--rojo-bg);border:0;color:var(--rojo);border-radius:var(--radius-xs);cursor:pointer;font-size:16px;width:36px;height:32px}
+.ev-row .btn-del:hover{background:var(--rojo-border)}
+.ev-header{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}
+#ev-add-btn{margin-top:8px;background:var(--accent-soft);border:1px dashed var(--accent-2);color:var(--accent);border-radius:var(--radius-sm);padding:7px 16px;cursor:pointer;font-size:12px;font-weight:600;width:100%;font-family:inherit}
+#ev-add-btn:hover{background:var(--azul-st-bg)}
+
+/* SVG chart */
+.chart-svg{width:100%;height:auto;display:block}
+.bar-pos{fill:var(--accent-2);opacity:.9}
+.bar-neg{fill:var(--rojo);opacity:.85}
+
+/* Alertas */
+.alert-list{list-style:none;padding:0}
+.alert-list li{padding:10px 14px;background:var(--rojo-bg);border-left:3px solid var(--rojo);border-radius:0 var(--radius-xs) var(--radius-xs) 0;margin-bottom:6px;font-size:12px;color:var(--rojo);display:flex;justify-content:space-between;gap:10px}
+.alert-list li.warn{background:var(--amarillo-bg);border-left-color:var(--amarillo);color:var(--amarillo)}
+.alert-list li.info{background:var(--azul-st-bg);border-left-color:var(--azul-st);color:var(--azul-st)}
+.alert-list li b{color:inherit}
+.alert-empty{color:var(--muted-2);font-size:12px;padding:10px 0}
+.analisis-tabs{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap}
+.atab{background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s}
+.atab:hover{border-color:var(--accent-2);color:var(--accent-2)}
+.atab.active{background:var(--accent-2);border-color:var(--accent-2);color:#fff}
+.analisis-body{display:none}
+.analisis-body.active{display:block}
+.analisis-ctrl{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.analisis-ctrl select{font-size:12px;padding:3px 6px;border:1px solid var(--border);border-radius:5px;background:var(--surface);color:var(--text)}
+.analisis-count{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.analisis-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px}
+.analisis-list li{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:7px 12px;border-radius:6px;font-size:12px;background:var(--surface-2);border:1px solid var(--border)}
+.analisis-list li b{color:var(--text);font-weight:600}
+.analisis-list li span{color:var(--muted);font-size:11px;text-align:right;flex-shrink:0}
+.analisis-list li.info{background:var(--azul-st-bg,#eff6ff);border-color:var(--azul-st,#3b82f6);color:var(--azul-st,#1d4ed8)}
+.analisis-list li.info b{color:var(--azul-st,#1d4ed8)}
+.analisis-list li.info span{color:var(--azul-st,#3b82f6)}
+.analisis-list li.warn{background:var(--amarillo-bg,#fffbeb);border-color:var(--amarillo,#f59e0b)}
+.analisis-list li.warn b{color:#92400e}
+.analisis-list li.warn span{color:#b45309}
+
+/* Avance del mes */
+.progress-bar{height:7px;background:var(--border);border-radius:var(--pill);overflow:hidden;position:relative;margin-top:8px}
+.progress-fill{height:100%;border-radius:var(--pill);background:var(--verde);transition:width .4s}
+.progress-fill.warn{background:var(--amarillo)}
+.progress-fill.danger{background:var(--rojo)}
+.progress-marker{position:absolute;top:-3px;width:2px;height:13px;background:var(--text)}
+.progress-marker::after{content:attr(data-label);position:absolute;top:15px;left:-15px;font-size:9px;color:var(--muted);white-space:nowrap;font-weight:600}
+
+/* Target editor modal */
+.target-edit{margin-top:14px}
+.target-edit input[type=number]{width:120px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:13px;background:var(--bg);color:var(--text)}
+.target-edit input[type=text]{width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:12px;margin-top:4px;background:var(--bg);color:var(--text)}
+.target-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-soft)}
+.target-row label{min-width:200px;font-weight:600;color:var(--text);font-size:13px}
+
+
+/* Team meeting specific */
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.team-card{background:var(--surface);border-radius:var(--radius);padding:18px;border:1px solid var(--border);border-top:3px solid var(--border)}
+.team-card.fa{border-top-color:var(--accent-2)}
+.team-card.fe{border-top-color:var(--verde)}
+.team-card.lu{border-top-color:var(--amarillo)}
+.team-card .name{font-weight:700;font-size:14px;margin-bottom:4px;color:var(--text);letter-spacing:-0.1px}
+.team-card .vert{font-size:11px;color:var(--muted);margin-bottom:12px}
+.team-card .num-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.team-card .num-cell{background:var(--surface-2);padding:8px 10px;border-radius:var(--radius-xs);border:1px solid var(--border-soft)}
+.team-card .num-cell .l{font-size:9px;font-weight:700;color:var(--muted-2);text-transform:uppercase;letter-spacing:.5px}
+.team-card .num-cell .v{font-size:14px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
+.team-card .gap-line{margin-top:10px;font-size:11px;color:var(--muted);text-align:center}
+.team-card .gap-line b{font-size:13px;color:var(--text);font-variant-numeric:tabular-nums}
+
+.team-events{background:var(--accent-soft);border:1px solid var(--azul-st-border);border-radius:var(--radius-sm);padding:12px 16px;font-size:12px;color:var(--accent);margin-top:16px}
+.team-events b{color:var(--accent);display:block;margin-bottom:6px;font-size:10px;text-transform:uppercase;letter-spacing:.6px;font-weight:700}
+.team-events ul{list-style:none;padding:0}
+.team-events li{padding:4px 0;border-bottom:1px solid var(--azul-st-border)}
+.team-events li:last-child{border-bottom:0}
+
+/* HubSpot section */
+.hs-section{background:var(--surface);border:1px solid var(--amarillo-border);border-radius:var(--radius);padding:18px 20px;margin-bottom:22px}
+.hs-section .section-title{color:var(--amarillo)}
+.hs-badge{display:inline-block;background:#ff7a59;color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:var(--pill);letter-spacing:.5px;vertical-align:middle;margin-left:6px}
+.hs-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.hs-kpi{background:var(--surface-2);border:1px solid var(--amarillo-border);border-radius:var(--radius-sm);padding:11px 13px}
+.hs-kpi .l{font-size:9px;font-weight:700;color:var(--amarillo);text-transform:uppercase;letter-spacing:.5px}
+.hs-kpi .v{font-size:18px;font-weight:700;color:var(--text);margin-top:3px;font-variant-numeric:tabular-nums;letter-spacing:-0.3px}
+.hs-kpi .s{font-size:10px;color:var(--muted-2);margin-top:2px}
+.hs-deal-list{list-style:none;padding:0}
+.hs-deal-list li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 10px;border-bottom:1px solid var(--border-soft);font-size:12px}
+.hs-deal-list li:last-child{border-bottom:0}
+.hs-deal-list .dn{flex:1;color:var(--text-2);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hs-deal-list .da{font-weight:700;color:var(--amarillo);white-space:nowrap;font-variant-numeric:tabular-nums}
+.hs-deal-list .dd{font-size:10px;color:var(--muted-2);white-space:nowrap}
+.hs-funnel{display:flex;flex-direction:column;gap:5px;margin-top:4px}
+.hs-funnel-row{display:flex;align-items:center;gap:8px;font-size:11px}
+.hs-funnel-row .fl{min-width:130px;color:var(--muted);font-weight:500}
+.hs-funnel-row .fbar{flex:1;height:16px;background:var(--amarillo-bg);border-radius:var(--radius-xs);overflow:hidden;position:relative}
+.hs-funnel-row .ff{height:100%;background:var(--amarillo);border-radius:var(--radius-xs);display:flex;align-items:center;padding-left:6px;color:#fff;font-size:10px;font-weight:700}
+.hs-funnel-row .fn{min-width:80px;text-align:right;color:var(--muted);font-size:10px;font-variant-numeric:tabular-nums}
+.winrate-badge{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:12px;font-weight:700}
+.winrate-badge.good{background:var(--verde-bg);color:var(--verde)}
+.winrate-badge.mid{background:var(--amarillo-bg);color:var(--amarillo)}
+.winrate-badge.low{background:var(--rojo-bg);color:var(--rojo)}
+
+@media(max-width:900px){.grid-2,.grid-2-eq{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>⚡ Luctron · Reuniones de Ventas</h1>
+    <div style="font-size:11px;opacity:.7;margin-top:2px">Herramienta de 1-on-1 mensual</div>
+  </div>
+  <div class="right">
+    <span class="ts" id="data-ts">Datos: cargando...</span>
+    <button class="btn btn-refresh" id="btn-refresh">🔄 Actualizar datos</button>
+  </div>
+</header>
+
+<div class="tabs" id="tabs">
+  <button class="tab active" data-key="overview"><span class="dot"></span>Overview</button>
+  <button class="tab" data-key="equipo" style="border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0"><span class="dot" style="background:#dc2626"></span>👥 Reunión de Equipo</button>
+  <button class="tab" data-key="facundo_oroza"><span class="dot"></span>Facundo Oroza</button>
+  <button class="tab" data-key="federico_caffarelli"><span class="dot"></span>Federico Caffarelli</button>
+  <button class="tab" data-key="lucas_luna"><span class="dot"></span>Lucas Luna</button>
+  <button class="tab" data-key="inx2_nacho"><span class="dot"></span>INX2 / Nacho</button>
+  <button class="tab" data-key="facturas" style="border-left:1px solid #e2e8f0"><span class="dot" style="background:#0891b2"></span>📄 Facturas</button>
+</div>
+
+<div id="panels"></div>
+
+<div class="toast" id="toast"></div>
+
+<div id="modal" onclick="if(event.target.id==='modal')cerrarModal()">
+  <div class="box">
+    <button class="close" onclick="cerrarModal()">×</button>
+    <h3 id="modal-title">Reunión</h3>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<div id="modal-eventos" onclick="if(event.target.id==='modal-eventos')cerrarEditorEventos()">
+  <div class="ev-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h3 style="margin:0">📅 Eventos relevantes</h3>
+      <button style="background:0;border:0;font-size:20px;cursor:pointer;color:#64748b" onclick="cerrarEditorEventos()">×</button>
+    </div>
+    <div class="ev-row ev-header">
+      <span>Fecha (AAAA-MM)</span><span>Título</span><span>Tipo</span><span>Vendedor</span><span></span>
+    </div>
+    <div id="ev-lista"></div>
+    <button id="ev-add-btn" onclick="evAgregarFila()">+ Agregar evento</button>
+    <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="cerrarEditorEventos()">Cancelar</button>
+      <button class="btn" onclick="guardarEventos()" style="background:#2563eb;color:#fff;border:0">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ====== Estado global ======
+let DATA = [];
+let DATA_TS = null;
+let TARGETS = {equipo_mensual_usd: 175000, vendedores: {}};
+let HUBSPOT = null;
+let TC_BNA = {};   // { "YYYY-MM-DD": venta_float } — dolar BNA oficial por fecha
+const CURRENT_YEAR  = new Date().getFullYear();
+const CURRENT_MONTH = new Date().getMonth() + 1;
+const CURRENT_DAY   = new Date().getDate();
+
+// Eventos relevantes del año — se carga desde /api/eventos (eventos.json)
+let EVENTOS_PROXIMOS = [];
+
+const VENDEDORES = {
+  facundo_oroza: {dbName: "FACUNDO OROZA", label: "Facundo Oroza", verticales: "Farma · Logística · Industria · ANKA", color: "#2563eb",
+    contextoBase: "Top vendedor 2025 con $812K USD (+46% vs 2024). Vertical farma en pico histórico — Retail 100 a la vuelta. ANKA su línea estrella ($218K run rate). Cuenta ancla: Llama Figueroa."},
+  federico_caffarelli: {dbName: "FEDERICO CAFFARELLI", label: "Federico Caffarelli", verticales: "Estaciones de servicio (95%)", color: "#10b981",
+    contextoBase: "Mejor debut histórico ($413K en 2025 desde mayo). Va a operar Equipetrol Colombia. Vertical demandante. Posible upside con cross-sell VIKS en playas exteriores."},
+  lucas_luna: {dbName: "LUCAS LUNA", label: "Lucas Luna", verticales: "Deportivo · oficinas · universidades · industria · apoyo estaciones", color: "#f59e0b",
+    contextoBase: "Run rate proyectado ~$265K. Va a ser dueño de los lanzamientos VANG (proyectores deportivos) y VIKS (alumbrado público) que llegan en junio. Año bisagra."},
+  inx2_nacho: {dbName: "INX2 ILUMINACION SA", label: "INX2 / Nacho", verticales: "Cuentas históricas · canal internacional", color: "#8b5cf6",
+    contextoBase: "Cartera del dueño. Lidera apertura de canales internacionales (Arpec hecho, Equipetrol abre, Retail 100 MX a definir, evento Surtidores Rep. Dominicana en noviembre)."}
+};
+
+const MONTHS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+// r.t = TOTAL neto en PESOS. USD = neto / TC BNA oficial de la fecha del comprobante.
+// TC_BNA se carga desde /api/tc (dolar BNA venta, por fecha exacta).
+// Si la fecha exacta no tiene cotizacion (feriado/fin de semana) busca el dia anterior mas cercano.
+function getTCFecha(a, m, d){
+  if(!a || !m) return 1000;
+  const fechaStr = `${a}-${String(m).padStart(2,'0')}-${String(d||1).padStart(2,'0')}`;
+  if(TC_BNA[fechaStr]) return TC_BNA[fechaStr];
+  // Buscar hacia atras hasta 7 dias (fines de semana y feriados)
+  for(let i=1; i<=7; i++){
+    const dt = new Date(a, m-1, (d||1)-i);
+    const k = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+    if(TC_BNA[k]) return TC_BNA[k];
+  }
+  return 1000; // fallback si no hay datos
+}
+function toUSD(r){ return r.t / getTCFecha(r.a, r.m, r.d); }
+
+function fmtK(v){const a=Math.abs(v);if(a>=1e6)return '$'+(v/1e6).toFixed(2)+'M';if(a>=1e3)return '$'+(v/1e3).toFixed(0)+'K';return '$'+Math.round(v)}
+function fmtFull(v){return '$'+Math.round(v).toLocaleString('es-AR')}
+function pct(v,t){return t>0?Math.round(v/t*100):0}
+
+function toast(msg, type='success'){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+// ====== Carga de datos ======
+async function cargarDatos(){
+  try {
+    const r = await fetch('/api/data');
+    const j = await r.json();
+    if(j.ok){
+      DATA = j.data;
+      DATA_TS = j.ts;
+      document.getElementById('data-ts').textContent = `Datos: ${j.n} filas · ${j.ts}`;
+    } else {
+      document.getElementById('data-ts').textContent = 'Sin datos · tocá Actualizar';
+      DATA = [];
+    }
+    await cargarTargets();
+    await cargarTC();
+    await cargarEventos();
+    await cargarEstadoServidor();
+    await cargarHubspot();
+    renderTodo();
+  } catch(e){
+    toast('Error cargando datos: '+e.message, 'error');
+  }
+}
+
+async function cargarTargets(){
+  try {
+    const r = await fetch('/api/targets');
+    const j = await r.json();
+    if(j.ok) TARGETS = j.targets;
+  } catch(e){}
+}
+
+async function cargarTC(){
+  try {
+    const r = await fetch('/api/tc');
+    TC_BNA = await r.json();
+  } catch(e){ TC_BNA = {}; }
+}
+
+async function cargarEventos(){
+  try {
+    const r = await fetch('/api/eventos');
+    EVENTOS_PROXIMOS = await r.json();
+  } catch(e){ EVENTOS_PROXIMOS = []; }
+}
+
+async function cargarHubspot(){
+  try {
+    const r = await fetch('/api/hubspot');
+    const j = await r.json();
+    if(j.ok !== false) HUBSPOT = j;
+  } catch(e){ HUBSPOT = null; }
+}
+
+// Render bloque HubSpot para un vendedor
+function renderHubspotVendedor(key){
+  if(!HUBSPOT || !HUBSPOT.stats_by_owner) return '';
+  const s = HUBSPOT.stats_by_owner[key];
+  const wl = HUBSPOT.win_loss_ytd && HUBSPOT.win_loss_ytd[key];
+  if(!s) return '';
+  const wr = wl && wl.win_rate;
+  const wrCls = wr===null||wr===undefined?'mid':wr>=50?'good':wr>=35?'mid':'low';
+  let html = `<div class="hs-section">
+    <div class="section-title">Pipeline HubSpot <span class="hs-badge">CRM</span> <span class="sub">snapshot ${HUBSPOT.updated||''}</span></div>
+    <div class="hs-kpis">
+      <div class="hs-kpi"><div class="l">Deals abiertos</div><div class="v">${s.open_count}</div><div class="s">en su pipeline</div></div>
+      <div class="hs-kpi"><div class="l">Valor pipeline</div><div class="v">${fmtK(s.open_amount)}</div><div class="s">USD con monto cargado</div></div>
+      <div class="hs-kpi"><div class="l">Win rate YTD</div><div class="v"><span class="winrate-badge ${wrCls}">${wr!==null&&wr!==undefined?wr+'%':'—'}</span></div><div class="s">${wl?wl.count+'W / '+wl.lost+'L':'sin datos'}</div></div>
+      <div class="hs-kpi"><div class="l">Detenidos</div><div class="v">${s.detenido_count}</div><div class="s">${fmtK(s.detenido_amount)} frenados</div></div>
+    </div>`;
+
+  // Funnel por etapa
+  const stages = ['Descubrimiento','Estudio Luminico','Pendiente Cotizar','Cotizado Negociando','Detenido','Aliados Comerciales','Recurrente'];
+  const maxCount = Math.max(...stages.map(st => (s.by_stage[st]||{}).count||0), 1);
+  html += `<div style="font-size:11px;font-weight:700;color:#9a3412;text-transform:uppercase;letter-spacing:.5px;margin:6px 0 8px">Embudo por etapa</div><div class="hs-funnel">`;
+  stages.forEach(st => {
+    const d = s.by_stage[st];
+    if(!d || !d.count) return;
+    const w = d.count/maxCount*100;
+    html += `<div class="hs-funnel-row">
+      <span class="fl">${st}</span>
+      <span class="fbar"><span class="ff" style="width:${w}%">${d.count}</span></span>
+      <span class="fn">${fmtK(d.amount)}</span>
+    </div>`;
+  });
+  html += `</div>`;
+
+  // Deals calientes (Cotizado Negociando)
+  if(s.caliente && s.caliente.length){
+    html += `<div style="font-size:11px;font-weight:700;color:#9a3412;text-transform:uppercase;letter-spacing:.5px;margin:16px 0 6px">🔥 Deals calientes — cotizando/negociando (top por monto)</div>
+      <ul class="hs-deal-list">`;
+    s.caliente.forEach(d => {
+      const inact = d.days_inactive!==null && d.days_inactive!==undefined ? `${d.days_inactive}d sin tocar` : '';
+      html += `<li><span class="dn">${d.name||'(sin nombre)'}</span> <span class="dd">${inact}</span> <span class="da">${fmtK(d.amount)}</span></li>`;
+    });
+    html += `</ul>`;
+  }
+
+  // Estancados
+  if(s.estancado && s.estancado.length){
+    html += `<div style="font-size:11px;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:.5px;margin:16px 0 6px">⏳ Estancados (+30 días sin movimiento)</div>
+      <ul class="hs-deal-list">`;
+    s.estancado.forEach(d => {
+      html += `<li><span class="dn">${d.name||'(sin nombre)'} · <small style="color:#94a3b8">${d.stage}</small></span> <span class="dd">${d.days_inactive}d</span> <span class="da">${fmtK(d.amount)}</span></li>`;
+    });
+    html += `</ul>`;
+  }
+
+  html += `</div>`;
+  return html;
+}
+
+// Render bloque HubSpot para el equipo
+function renderHubspotEquipo(){
+  if(!HUBSPOT || !HUBSPOT.team_stats) return '';
+  const t = HUBSPOT.team_stats;
+  let html = `<div class="hs-section">
+    <div class="section-title">Pipeline HubSpot del equipo <span class="hs-badge">CRM</span> <span class="sub">snapshot ${HUBSPOT.updated||''}</span></div>
+    <div class="hs-kpis">
+      <div class="hs-kpi"><div class="l">Deals abiertos (equipo)</div><div class="v">${t.open_count}</div></div>
+      <div class="hs-kpi"><div class="l">Valor pipeline total</div><div class="v">${fmtK(t.open_amount)}</div><div class="s">USD</div></div>`;
+  // Win rate equipo
+  const eq = ['facundo_oroza','federico_caffarelli','lucas_luna'];
+  let totW=0, totL=0;
+  eq.forEach(k => { const wl=HUBSPOT.win_loss_ytd[k]; if(wl){totW+=wl.count; totL+=wl.lost;} });
+  const wrEq = (totW+totL)>0 ? Math.round(totW/(totW+totL)*100) : 0;
+  html += `<div class="hs-kpi"><div class="l">Win rate equipo YTD</div><div class="v"><span class="winrate-badge ${wrEq>=50?'good':wrEq>=35?'mid':'low'}">${wrEq}%</span></div><div class="s">${totW}W / ${totL}L</div></div>
+      <div class="hs-kpi"><div class="l">Cotizando/negociando</div><div class="v">${(t.by_stage_global['Cotizado Negociando']||{}).count||0}</div><div class="s">${fmtK((t.by_stage_global['Cotizado Negociando']||{}).amount||0)}</div></div>
+    </div>`;
+  // Funnel global
+  const stages = ['Descubrimiento','Estudio Luminico','Pendiente Cotizar','Cotizado Negociando','Detenido'];
+  const maxC = Math.max(...stages.map(st => (t.by_stage_global[st]||{}).count||0), 1);
+  html += `<div style="font-size:11px;font-weight:700;color:#9a3412;text-transform:uppercase;letter-spacing:.5px;margin:6px 0 8px">Embudo del equipo</div><div class="hs-funnel">`;
+  stages.forEach(st => {
+    const d = t.by_stage_global[st];
+    if(!d||!d.count) return;
+    html += `<div class="hs-funnel-row"><span class="fl">${st}</span><span class="fbar"><span class="ff" style="width:${d.count/maxC*100}%">${d.count}</span></span><span class="fn">${fmtK(d.amount)}</span></div>`;
+  });
+  html += `</div></div>`;
+  return html;
+}
+
+async function guardarTargets(){
+  try {
+    const r = await fetch('/api/targets', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(TARGETS)});
+    const j = await r.json();
+    if(j.ok) toast('Targets actualizados', 'success');
+    else toast('Error: '+j.msg, 'error');
+  } catch(e){ toast('Error: '+e.message, 'error'); }
+}
+
+async function refrescar(){
+  const btn = document.getElementById('btn-refresh');
+  const orig = btn.innerHTML;
+  btn.innerHTML = '⏳ Actualizando...';
+  btn.disabled = true;
+  try {
+    const r = await fetch('/api/refresh', {method:'POST'});
+    const j = await r.json();
+    if(j.ok){
+      toast(j.msg, 'success');
+      await cargarDatos();
+    } else {
+      toast('Error: '+j.msg, 'error');
+    }
+  } catch(e){
+    toast('Error: '+e.message, 'error');
+  } finally {
+    btn.innerHTML = orig;
+    btn.disabled = false;
+  }
+}
+document.getElementById('btn-refresh').onclick = refrescar;
+
+// ====== Tabs ======
+let tabActiva = 'overview';
+document.querySelectorAll('.tab').forEach(t => {
+  t.onclick = () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    tabActiva = t.dataset.key;
+    renderTodo();
+  };
+});
+
+// ====== Render ======
+function renderTodo(){
+  const cont = document.getElementById('panels');
+  cont.innerHTML = '';
+  const panel = document.createElement('div');
+  panel.className = 'panel active';
+  if(tabActiva === 'overview'){
+    panel.innerHTML = renderOverview();
+  } else if(tabActiva === 'equipo'){
+    panel.innerHTML = renderEquipo();
+    setTimeout(() => { bindVendedorEvents('equipo'); }, 0);
+  } else if(tabActiva === 'facturas'){
+    panel.innerHTML = renderFacturas();
+    setTimeout(bindFacturasEvents, 0);
+  } else {
+    panel.innerHTML = renderVendedor(tabActiva);
+    setTimeout(() => { bindVendedorEvents(tabActiva); }, 0);
+  }
+  cont.appendChild(panel);
+}
+
+// ====== Pestaña Facturas ======
+let factFiltros = {
+  anio: CURRENT_YEAR,
+  mes: CURRENT_MONTH,
+  vendedor: 'todos',
+  tipo: 'todos', // 'todos' | 'facturas' | 'nc'
+  buscar: ''
+};
+
+function getFacturasAgrupadas(){
+  // Agrupa líneas por (tipo_var + número + cliente + vendedor) = una factura
+  const map = {};
+  DATA.forEach(r => {
+    if(r.a !== factFiltros.anio) return;
+    if(factFiltros.mes !== 'todos' && r.m !== factFiltros.mes) return;
+    if(factFiltros.vendedor !== 'todos' && r.v !== factFiltros.vendedor) return;
+    const esNC = (r.tv || '').startsWith('C');
+    if(factFiltros.tipo === 'facturas' && esNC) return;
+    if(factFiltros.tipo === 'nc' && !esNC) return;
+    const k = `${r.tv}|${r.f}|${r.c}|${r.v}`;
+    if(!map[k]){
+      map[k] = {
+        tipo: r.tv, numero: r.f, cliente: r.c, vendedor: r.v,
+        fecha: new Date(r.a, r.m-1, r.d),
+        anio: r.a, mes: r.m, dia: r.d,
+        moneda: r.mo, esNC: esNC,
+        totalUSD: 0, totalMoneda: 0, lineas: 0, familias: new Set(), unidades: 0
+      };
+    }
+    map[k].totalUSD += toUSD(r);
+    map[k].totalMoneda += r.t;
+    map[k].lineas += 1;
+    map[k].unidades += r.q;
+    if(r.p) map[k].familias.add(r.p);
+  });
+  let arr = Object.values(map);
+  // Filtro de búsqueda
+  if(factFiltros.buscar.trim()){
+    const q = factFiltros.buscar.toLowerCase();
+    arr = arr.filter(f =>
+      (f.cliente||'').toLowerCase().includes(q) ||
+      (f.numero||'').toLowerCase().includes(q) ||
+      (f.vendedor||'').toLowerCase().includes(q)
+    );
+  }
+  // Ordenar por fecha descendente
+  arr.sort((a,b) => b.fecha - a.fecha);
+  return arr;
+}
+
+function renderFacturas(){
+  if(!DATA.length) return `<div class="section">Sin datos. Tocá <b>🔄 Actualizar datos</b> arriba.</div>`;
+  // Obtener años disponibles
+  const aniosSet = [...new Set(DATA.map(r => r.a))].sort((a,b)=>b-a);
+
+  let html = `
+  <div class="section" style="margin-bottom:18px">
+    <div class="section-title">Filtros</div>
+    <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:end">
+      <div>
+        <label style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;display:block;margin-bottom:4px">Año</label>
+        <select id="fact-anio" style="padding:7px 12px;border:1px solid #cbd5e0;border-radius:5px;font-size:13px;font-family:inherit">
+          ${aniosSet.map(a => `<option value="${a}" ${a===factFiltros.anio?'selected':''}>${a}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;display:block;margin-bottom:4px">Mes</label>
+        <select id="fact-mes" style="padding:7px 12px;border:1px solid #cbd5e0;border-radius:5px;font-size:13px;font-family:inherit">
+          <option value="todos" ${factFiltros.mes==='todos'?'selected':''}>Todos los meses</option>
+          ${MONTHS.map((m,i) => `<option value="${i+1}" ${(i+1)===factFiltros.mes?'selected':''}>${m}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;display:block;margin-bottom:4px">Vendedor</label>
+        <select id="fact-vend" style="padding:7px 12px;border:1px solid #cbd5e0;border-radius:5px;font-size:13px;font-family:inherit">
+          <option value="todos" ${factFiltros.vendedor==='todos'?'selected':''}>Todos</option>
+          ${Object.entries(VENDEDORES).map(([k,v]) => `<option value="${v.dbName}" ${factFiltros.vendedor===v.dbName?'selected':''}>${v.label}</option>`).join('')}
+        </select>
+      </div>
+      <div>
+        <label style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;display:block;margin-bottom:4px">Tipo</label>
+        <select id="fact-tipo" style="padding:7px 12px;border:1px solid #cbd5e0;border-radius:5px;font-size:13px;font-family:inherit">
+          <option value="todos" ${factFiltros.tipo==='todos'?'selected':''}>Todos</option>
+          <option value="facturas" ${factFiltros.tipo==='facturas'?'selected':''}>Solo facturas (F/P/N)</option>
+          <option value="nc" ${factFiltros.tipo==='nc'?'selected':''}>Solo Notas Crédito (C)</option>
+        </select>
+      </div>
+      <div style="flex:1;min-width:200px">
+        <label style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;display:block;margin-bottom:4px">Buscar cliente / número / vendedor</label>
+        <div style="display:flex;gap:6px">
+          <input type="text" id="fact-buscar" value="${factFiltros.buscar.replace(/"/g,'&quot;')}" placeholder="Escribir y presionar Buscar o Enter..." style="flex:1;padding:7px 12px;border:1px solid #cbd5e0;border-radius:5px;font-size:13px;font-family:inherit">
+          <button class="btn btn-ghost" id="fact-buscar-btn" style="padding:7px 14px;white-space:nowrap">🔍 Buscar</button>
+          <button class="btn btn-ghost" id="fact-buscar-clear" title="Limpiar búsqueda" style="padding:7px 10px;${factFiltros.buscar?'':'display:none'}">✕</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:end">
+        <button class="btn btn-ghost" id="fact-mes-actual" style="padding:7px 14px">📅 Mes actual</button>
+        <button class="btn btn-ghost" id="fact-anio-completo" style="padding:7px 14px">Año completo</button>
+      </div>
+    </div>
+  </div>`;
+
+  const facturas = getFacturasAgrupadas();
+  const totalUSD  = facturas.reduce((s,f)=>s+f.totalUSD,0);
+  const totalARS  = facturas.reduce((s,f)=>s+f.totalMoneda,0);
+  const sumPosUSD = facturas.filter(f=>!f.esNC).reduce((s,f)=>s+f.totalUSD,0);
+  const sumPosARS = facturas.filter(f=>!f.esNC).reduce((s,f)=>s+f.totalMoneda,0);
+  const sumNCUSD  = facturas.filter(f=>f.esNC).reduce((s,f)=>s+f.totalUSD,0);
+  const sumNCARS  = facturas.filter(f=>f.esNC).reduce((s,f)=>s+f.totalMoneda,0);
+  const periodLabel = factFiltros.mes==='todos' ? `Todo el año ${factFiltros.anio}` : `${MONTHS[factFiltros.mes-1]} ${factFiltros.anio}`;
+
+  html += `
+  <div class="kpis">
+    <div class="kpi blue">
+      <div class="lbl">Total neto del período</div>
+      <div class="val">${fmtFull(totalUSD)} <span style="font-size:13px;font-weight:600;color:#3b82f6">USD</span></div>
+      <div class="sub">AR$ ${Math.round(totalARS).toLocaleString('es-AR')} · ${periodLabel}</div>
+    </div>
+    <div class="kpi green">
+      <div class="lbl">Facturas (suma)</div>
+      <div class="val">${fmtK(sumPosUSD)} <span style="font-size:13px;font-weight:600;color:#059669">USD</span></div>
+      <div class="sub">AR$ ${Math.round(sumPosARS).toLocaleString('es-AR')} · ${facturas.filter(f=>!f.esNC).length} comp.</div>
+    </div>
+    <div class="kpi red">
+      <div class="lbl">Notas de crédito (resta)</div>
+      <div class="val">${fmtK(Math.abs(sumNCUSD))} <span style="font-size:13px;font-weight:600;color:#dc2626">USD</span></div>
+      <div class="sub">AR$ ${Math.round(Math.abs(sumNCARS)).toLocaleString('es-AR')} · ${facturas.filter(f=>f.esNC).length} comp.</div>
+    </div>
+    <div class="kpi"><div class="lbl">Total comprobantes</div><div class="val">${facturas.length}</div><div class="sub">${[...new Set(facturas.map(f=>f.cliente))].length} clientes únicos</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">
+      <span>Detalle de comprobantes · ${periodLabel}</span>
+      <span class="sub">${facturas.length} comprobantes · ordenado por fecha desc</span>
+    </div>
+    <div style="overflow-x:auto;max-height:600px;overflow-y:auto">
+    <table>
+      <thead style="position:sticky;top:0;background:#f7fafc;z-index:1">
+        <tr>
+          <th>Fecha</th>
+          <th>Tipo · N°</th>
+          <th>Cliente</th>
+          <th>Vendedor</th>
+          <th>Familias</th>
+          <th>Líneas</th>
+          <th>Unidades</th>
+          <th>Moneda</th>
+          <th>Importe origen</th>
+          <th>AR$ neto</th>
+          <th>USD neto</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+  if(!facturas.length){
+    html += `<tr><td colspan="11" style="padding:30px;text-align:center;color:#94a3b8">Sin comprobantes en el período</td></tr>`;
+  } else {
+    // Agrupar por día para insertar subtotales
+    let diaActual = null, diaUSD = 0, diaARS = 0, diaNComp = 0;
+    const flushDia = () => {
+      if(diaActual === null) return '';
+      const color = diaUSD < 0 ? '#dc2626' : '#0f766e';
+      return `<tr style="background:#f0fdf4;border-top:1px solid #d1fae5;border-bottom:2px solid #a7f3d0">
+        <td colspan="9" style="text-align:right;font-size:11px;font-weight:700;color:#065f46;padding:5px 12px;text-transform:uppercase;letter-spacing:.04em">
+          Total ${diaActual} · ${diaNComp} comp.
+        </td>
+        <td style="font-size:12px;font-weight:700;color:${color};padding:5px 8px">AR$ ${Math.round(diaARS).toLocaleString('es-AR')}</td>
+        <td style="font-size:12px;font-weight:700;color:${color};padding:5px 8px">U$S ${Math.round(diaUSD).toLocaleString('es-AR')}</td>
+      </tr>`;
+    };
+
+    facturas.forEach(f => {
+      const fStr = `${String(f.dia).padStart(2,'0')}/${String(f.mes).padStart(2,'0')}/${String(f.anio).slice(2)}`;
+      if(fStr !== diaActual){
+        html += flushDia();
+        diaActual = fStr; diaUSD = 0; diaARS = 0; diaNComp = 0;
+      }
+      diaUSD += f.totalUSD; diaARS += f.totalMoneda; diaNComp++;
+
+      const fams = [...f.familias].slice(0,3).join(', ') + (f.familias.size>3?'...':'');
+      const tipoBadge = f.esNC
+        ? `<span style="background:#fef2f2;color:#991b1b;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700">${f.tipo}</span>`
+        : `<span style="background:#f0f9ff;color:#1e40af;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700">${f.tipo}</span>`;
+      const usdColor = f.totalUSD < 0 ? 'color:#dc2626;font-weight:600' : 'font-weight:600';
+      const arsColor = f.totalMoneda < 0 ? 'color:#dc2626;font-weight:600' : 'font-weight:600';
+      html += `<tr>
+        <td>${fStr}</td>
+        <td>${tipoBadge} <b>${f.numero}</b></td>
+        <td>${f.cliente}</td>
+        <td><small>${f.vendedor||'—'}</small></td>
+        <td><small>${fams||'—'}</small></td>
+        <td>${f.lineas}</td>
+        <td>${Math.round(f.unidades)}</td>
+        <td><small>${f.moneda}</small></td>
+        <td>${f.moneda==='DL' ? 'U$S '+Math.round(f.totalMoneda/getTCFecha(f.anio,f.mes,f.dia)).toLocaleString('es-AR') : 'AR$ '+Math.round(f.totalMoneda).toLocaleString('es-AR')}</td>
+        <td style="${arsColor}">AR$ ${Math.round(f.totalMoneda).toLocaleString('es-AR')}</td>
+        <td style="${usdColor}">U$S ${Math.round(f.totalUSD).toLocaleString('es-AR')}</td>
+      </tr>`;
+    });
+    html += flushDia(); // último día
+    // Total general
+    html += `<tr style="background:#0f172a;color:#fff;font-weight:700;position:sticky;bottom:0">
+      <td colspan="9" style="text-align:right;color:#fff">TOTAL NETO</td>
+      <td style="color:#fff">AR$ ${Math.round(totalARS).toLocaleString('es-AR')}</td>
+      <td style="color:#fff">U$S ${Math.round(totalUSD).toLocaleString('es-AR')}</td>
+    </tr>`;
+  }
+  html += `</tbody></table>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:10px">
+      <button class="btn btn-ghost" onclick="exportarFacturasCSV()">📥 Exportar a CSV</button>
+    </div>
+  </div>`;
+  return html;
+}
+
+function bindFacturasEvents(){
+  document.getElementById('fact-anio').onchange = e => { factFiltros.anio = parseInt(e.target.value); renderTodo(); };
+  document.getElementById('fact-mes').onchange = e => { const v = e.target.value; factFiltros.mes = v==='todos'?'todos':parseInt(v); renderTodo(); };
+  document.getElementById('fact-vend').onchange = e => { factFiltros.vendedor = e.target.value; renderTodo(); };
+  document.getElementById('fact-tipo').onchange = e => { factFiltros.tipo = e.target.value; renderTodo(); };
+  const buscarEl = document.getElementById('fact-buscar');
+  const aplicarBusqueda = () => {
+    factFiltros.buscar = buscarEl.value;
+    renderTodo();
+  };
+  document.getElementById('fact-buscar-btn').onclick = aplicarBusqueda;
+  buscarEl.onkeydown = e => { if(e.key === 'Enter') aplicarBusqueda(); };
+  const clearBtn = document.getElementById('fact-buscar-clear');
+  if(clearBtn) clearBtn.onclick = () => { factFiltros.buscar = ''; renderTodo(); };
+  document.getElementById('fact-mes-actual').onclick = () => {
+    factFiltros.anio = new Date().getFullYear();
+    factFiltros.mes = new Date().getMonth()+1;
+    renderTodo();
+  };
+  document.getElementById('fact-anio-completo').onclick = () => {
+    factFiltros.anio = new Date().getFullYear();
+    factFiltros.mes = 'todos';
+    renderTodo();
+  };
+}
+
+function exportarFacturasCSV(){
+  const facturas = getFacturasAgrupadas();
+  const headers = ['Fecha','Tipo','Numero','Cliente','Vendedor','Familias','Lineas','Unidades','Moneda','Importe_Origen','ARS_Neto','USD_Neto'];
+  const rows = facturas.map(f => [
+    `${String(f.dia).padStart(2,'0')}/${String(f.mes).padStart(2,'0')}/${f.anio}`,
+    f.tipo, f.numero, f.cliente, f.vendedor||'', [...f.familias].join(';'),
+    f.lineas, Math.round(f.unidades), f.moneda,
+    Math.round(f.totalMoneda), Math.round(f.totalMoneda), Math.round(f.totalUSD)
+  ]);
+  const csv = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const mes = factFiltros.mes==='todos'?'todo':String(factFiltros.mes).padStart(2,'0');
+  a.download = `facturas_${factFiltros.anio}_${mes}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('CSV descargado', 'success');
+}
+
+// ====== Helpers para análisis ======
+function diasHabilesEnMes(year, month){
+  // month: 1-12
+  const d = new Date(year, month-1, 1);
+  const fin = new Date(year, month, 0).getDate();
+  let n = 0;
+  for(let i=1;i<=fin;i++){
+    const dia = new Date(year, month-1, i).getDay();
+    if(dia !== 0 && dia !== 6) n++;
+  }
+  return n;
+}
+function diasHabilesTranscurridos(year, month){
+  const hoy = new Date();
+  if(hoy.getFullYear() !== year || hoy.getMonth()+1 !== month) return diasHabilesEnMes(year, month);
+  let n = 0;
+  for(let i=1;i<=hoy.getDate();i++){
+    const dia = new Date(year, month-1, i).getDay();
+    if(dia !== 0 && dia !== 6) n++;
+  }
+  return n;
+}
+
+function ventasMesActualVendedor(vendorDbName){
+  return DATA.filter(r => r.v === vendorDbName && r.a === CURRENT_YEAR && r.m === CURRENT_MONTH)
+    .reduce((s,r)=>s+toUSD(r), 0);
+}
+
+// ====== Análisis de clientes ======
+function clientesNuevosMes(vendorDbName, anio, mes){
+  // Clientes que compraron en anio/mes y nunca habían comprado antes
+  const rows = DATA.filter(r => r.v === vendorDbName);
+  const nuevos = [];
+  const compraron = rows.filter(r => r.a === anio && r.m === mes);
+  const byCliMes = {};
+  compraron.forEach(r => { byCliMes[r.c] = (byCliMes[r.c]||0) + toUSD(r); });
+  Object.entries(byCliMes).forEach(([cli, v]) => {
+    const historial = rows.filter(r => r.c === cli && (r.a < anio || (r.a === anio && r.m < mes)));
+    if(historial.length === 0) nuevos.push({cli, v});
+  });
+  return nuevos.sort((a,b) => b.v - a.v);
+}
+
+function clientesCandidatosReactivacion(vendorDbName, mesesSinComprar){
+  // Compraron alguna vez pero no en los últimos N meses
+  const rows = DATA.filter(r => r.v === vendorDbName);
+  const limiteAnio = CURRENT_YEAR - Math.floor(mesesSinComprar / 12);
+  const limiteMes  = CURRENT_MONTH - (mesesSinComprar % 12);
+  // Última compra de cada cliente
+  const ultimaCompra = {};
+  const totalHistorico = {};
+  rows.forEach(r => {
+    const key = r.c;
+    if(!ultimaCompra[key] || r.a > ultimaCompra[key].a || (r.a === ultimaCompra[key].a && r.m > ultimaCompra[key].m)){
+      ultimaCompra[key] = {a: r.a, m: r.m};
+    }
+    totalHistorico[key] = (totalHistorico[key]||0) + toUSD(r);
+  });
+  const candidatos = [];
+  Object.entries(ultimaCompra).forEach(([cli, ult]) => {
+    // ¿La última compra fue hace más de N meses?
+    const mesesDesde = (CURRENT_YEAR - ult.a) * 12 + (CURRENT_MONTH - ult.m);
+    if(mesesDesde >= mesesSinComprar){
+      candidatos.push({cli, ultimoAnio: ult.a, ultimoMes: ult.m, mesesDesde, totalHistorico: totalHistorico[cli]||0});
+    }
+  });
+  return candidatos.sort((a,b) => b.totalHistorico - a.totalHistorico);
+}
+
+function clientesActivosQueNoCompraronEsteAnio(vendorDbName, nAnios){
+  // Compraron en al menos 1 de los últimos N años pero no compraron en CURRENT_YEAR todavía
+  const rows = DATA.filter(r => r.v === vendorDbName);
+  const compraron_cur = new Set(rows.filter(r => r.a === CURRENT_YEAR).map(r => r.c));
+  const byCliHistorico = {};
+  const anioMin = CURRENT_YEAR - nAnios;
+  rows.filter(r => r.a > anioMin && r.a < CURRENT_YEAR).forEach(r => {
+    if(!byCliHistorico[r.c]) byCliHistorico[r.c] = {total:0, años: new Set()};
+    byCliHistorico[r.c].total += toUSD(r);
+    byCliHistorico[r.c].años.add(r.a);
+  });
+  const resultado = [];
+  Object.entries(byCliHistorico).forEach(([cli, d]) => {
+    if(!compraron_cur.has(cli)){
+      resultado.push({cli, total: d.total, añosActivos: d.años.size, años: [...d.años].sort()});
+    }
+  });
+  return resultado.sort((a,b) => b.total - a.total);
+}
+
+// Patrón histórico intra-mes: dado el día actual, ¿qué % del mes suele estar vendido?
+// Devuelve { pct, expectedUSD, avgMensual, label, añosUsados }
+function calcPatronHistorico(rows, mes, diaActual){
+  const añosDisponibles = [...new Set(rows.map(r => r.a))]
+    .filter(a => a < CURRENT_YEAR)
+    .sort((a,b) => b-a)
+    .slice(0, 3); // últimos 3 años completos
+
+  if(!añosDisponibles.length) return null;
+
+  const fracciones = [];
+  const totalesMes = [];
+
+  añosDisponibles.forEach(anio => {
+    const delMes = rows.filter(r => r.a === anio && r.m === mes);
+    const totalMes = delMes.reduce((s,r) => s + toUSD(r), 0);
+    if(totalMes < 100) return; // mes sin datos significativos
+    const hastaHoy = delMes.filter(r => r.d <= diaActual).reduce((s,r) => s + toUSD(r), 0);
+    fracciones.push(hastaHoy / totalMes);
+    totalesMes.push(totalMes);
+  });
+
+  if(!fracciones.length) return null;
+
+  const avgFraccion = fracciones.reduce((s,f) => s+f, 0) / fracciones.length;
+  const avgMensual  = totalesMes.reduce((s,v) => s+v, 0) / totalesMes.length;
+  const expectedUSD = avgMensual * avgFraccion;
+
+  // ventas actuales del mes en curso
+  const curMes = rows.filter(r => r.a === CURRENT_YEAR && r.m === mes)
+                     .reduce((s,r) => s + toUSD(r), 0);
+  const pct = expectedUSD > 0 ? curMes / expectedUSD * 100 : null;
+
+  return {
+    pct,
+    expectedUSD,
+    avgMensual,
+    avgFraccionPct: Math.round(avgFraccion * 100),
+    añosUsados: añosDisponibles,
+    label: `Patrón histórico (${añosDisponibles.join('/')})`
+  };
+}
+
+function detectarAlertas(vendorDbName){
+  // Mantenida por compatibilidad con guardarReunion (usa alertas en el md)
+  return clientesActivosQueNoCompraronEsteAnio(vendorDbName, 2)
+    .slice(0, 8)
+    .map(d => ({tipo:'dormido', cli: d.cli, msg:`<b>${d.cli}</b> compró ${fmtK(d.total)} en los últimos 2 años pero <b>aún no compró en ${CURRENT_YEAR}</b>`}));
+}
+
+function renderOverview(){
+  if(!DATA.length) return `<div class="section"><div class="section-title">Sin datos</div><p style="color:#64748b">Tocá <b>🔄 Actualizar datos</b> arriba a la derecha para bajar las facturas desde SQL Server.</p></div>`;
+  // Calc por vendedor: YTD vs target
+  const ytd = {};
+  Object.keys(VENDEDORES).forEach(k => ytd[k] = {ytd: 0, prev: 0, anteAnio: 0, byMonth: new Array(12).fill(0), nClientes: new Set()});
+  DATA.forEach(r => {
+    Object.entries(VENDEDORES).forEach(([key, v]) => {
+      if(r.v === v.dbName){
+        const usd = toUSD(r);
+        if(r.a === CURRENT_YEAR){ ytd[key].ytd += usd; ytd[key].byMonth[r.m-1] += usd; ytd[key].nClientes.add(r.c); }
+        if(r.a === CURRENT_YEAR-1){ ytd[key].prev += usd; }
+        if(r.a === CURRENT_YEAR-2){ ytd[key].anteAnio += usd; }
+      }
+    });
+  });
+  // Determinar mes actual con datos
+  const maxMes = Math.max(...DATA.filter(r=>r.a===CURRENT_YEAR).map(r=>r.m), 0);
+  // Total real = TODOS los vendors del dataset (no solo los 4 principales)
+  const knownDbNames = new Set(Object.values(VENDEDORES).map(v=>v.dbName));
+  const totalEquipo = Object.values(ytd).reduce((s,v)=>s+v.ytd,0);
+  const totalReal = DATA.filter(r=>r.a===CURRENT_YEAR).reduce((s,r)=>s+toUSD(r),0);
+  const otrosYTD  = totalReal - totalEquipo;
+  // Acumular "otros" del año anterior para tendencia
+  const otrosPrevYTD = DATA.filter(r=>r.a===CURRENT_YEAR-1 && !knownDbNames.has(r.v)).reduce((s,r)=>s+toUSD(r),0);
+  let html = `<div class="kpis">
+    <div class="kpi blue"><div class="lbl">Total Equipo YTD ${CURRENT_YEAR}</div><div class="val">${fmtK(totalReal)}</div><div class="sub">${maxMes>0?MONTHS[maxMes-1]:'?'} ${CURRENT_YEAR} · ${maxMes} meses</div></div>
+    <div class="kpi green"><div class="lbl">Run rate anual</div><div class="val">${fmtK(maxMes>0?totalReal/maxMes*12:0)}</div><div class="sub">proyectado a 12 meses</div></div>
+    <div class="kpi amber"><div class="lbl">Target anual equipo</div><div class="val">${fmtK((TARGETS.equipo_mensual_usd||0)*12)}</div><div class="sub">USD ${((TARGETS.equipo_mensual_usd||0)/1000).toFixed(0)}K/mes</div></div>
+    <div class="kpi"><div class="lbl">Vendedores activos</div><div class="val">${Object.keys(VENDEDORES).length}</div><div class="sub">equipo Ventas Luctron</div></div>
+  </div>
+  <div class="section">
+    <div class="section-title">Performance por vendedor — ${CURRENT_YEAR} YTD <span class="sub">${maxMes} meses</span></div>
+    <table><thead><tr><th>Vendedor</th><th>YTD ${CURRENT_YEAR}</th><th>${CURRENT_YEAR-1} completo</th><th>Tendencia</th><th>Clientes activos ${CURRENT_YEAR}</th><th>Mejor mes ${CURRENT_YEAR}</th></tr></thead><tbody>`;
+  Object.entries(VENDEDORES).forEach(([k, info]) => {
+    const d = ytd[k];
+    const tendencia = d.prev>0 && maxMes>0 ? ((d.ytd/maxMes*12)/d.prev-1)*100 : null;
+    const tendCls = tendencia===null?'trend-flat':tendencia>=0?'trend-up':'trend-down';
+    const tendStr = tendencia===null?'—':(tendencia>=0?'↑':'↓')+Math.abs(tendencia).toFixed(0)+'%';
+    const bestM = d.byMonth.indexOf(Math.max(...d.byMonth));
+    const bestVal = d.byMonth[bestM];
+    html += `<tr><td><b style="color:${info.color}">${info.label}</b><br><small style="color:#94a3b8">${info.verticales}</small></td>
+      <td><b>${fmtK(d.ytd)}</b></td>
+      <td>${fmtK(d.prev)}</td>
+      <td class="${tendCls}">${tendStr}</td>
+      <td>${d.nClientes.size}</td>
+      <td>${bestVal>0?MONTHS[bestM]+' '+fmtK(bestVal):'—'}</td></tr>`;
+  });
+  // Fila "Otros vendedores" si hay diferencia significativa
+  if(Math.abs(otrosYTD) > 1){
+    const tendOtros = otrosPrevYTD!==0 && maxMes>0 ? ((otrosYTD/maxMes*12)/otrosPrevYTD-1)*100 : null;
+    const tendClsO = tendOtros===null?'trend-flat':tendOtros>=0?'trend-up':'trend-down';
+    const tendStrO = tendOtros===null?'—':(tendOtros>=0?'↑':'↓')+Math.abs(tendOtros).toFixed(0)+'%';
+    // Listar nombres de otros vendedores con datos en el año actual
+    const otrosNombres = [...new Set(DATA.filter(r=>r.a===CURRENT_YEAR && !knownDbNames.has(r.v)).map(r=>r.v))].join(', ');
+    const otrosClientes = new Set(DATA.filter(r=>r.a===CURRENT_YEAR && !knownDbNames.has(r.v)).map(r=>r.c)).size;
+    html += `<tr style="opacity:0.75;font-style:italic"><td><b style="color:#94a3b8">Otros vendedores</b><br><small style="color:#64748b">${otrosNombres||'—'}</small></td>
+      <td><b style="color:${otrosYTD>=0?'#22c55e':'#ef4444'}">${fmtK(otrosYTD)}</b></td>
+      <td>${fmtK(otrosPrevYTD)}</td>
+      <td class="${tendClsO}">${tendStrO}</td>
+      <td>${otrosClientes}</td>
+      <td>—</td></tr>`;
+    // Fila de total general
+    html += `<tr style="border-top:2px solid #334155;font-weight:bold"><td><b>TOTAL</b></td>
+      <td><b>${fmtK(totalReal)}</b></td>
+      <td>${fmtK(Object.values(ytd).reduce((s,v)=>s+v.prev,0)+otrosPrevYTD)}</td>
+      <td>—</td><td>—</td><td>—</td></tr>`;
+  }
+  html += '</tbody></table></div>';
+
+  // Evolución mensual del equipo completo
+  const monthlyEquipo = {cur: new Array(12).fill(0), prev: new Array(12).fill(0)};
+  DATA.forEach(r => {
+    const usd = toUSD(r);
+    if(r.a === CURRENT_YEAR)   monthlyEquipo.cur[r.m-1] += usd;
+    if(r.a === CURRENT_YEAR-1) monthlyEquipo.prev[r.m-1] += usd;
+  });
+  // Target mensual como línea de referencia
+  const targetMes = TARGETS.equipo_mensual_usd || 0;
+  html += `<div class="section">
+    <div class="section-title">Evolución mensual del equipo — ${CURRENT_YEAR} vs ${CURRENT_YEAR-1}</div>
+    ${chartMensualEquipo(monthlyEquipo, targetMes)}
+  </div>`;
+
+  return html;
+}
+
+function chartMensualEquipo(monthly, targetMes){
+  const W=700, H=220, PL=60, PR=20, PT=15, PB=34;
+  const CW=W-PL-PR, CH=H-PT-PB;
+  const allVals = [...monthly.cur, ...monthly.prev, targetMes];
+  const maxVal = Math.max(...allVals, 1) * 1.15;
+  const step = CW/12;
+  const barW = Math.min(step*0.36, 18);
+  let s = `<svg viewBox="0 0 ${W} ${H}" class="chart-svg">`;
+  // Grillas
+  for(let i=0;i<=4;i++){
+    const y=PT+CH*(1-i/4), v=maxVal*i/4;
+    s+=`<line x1="${PL}" y1="${y}" x2="${W-PR}" y2="${y}" stroke="#f0f1f3"/>`;
+    s+=`<text x="${PL-5}" y="${y+4}" text-anchor="end" font-size="9" fill="#94a3b8">${fmtK(v)}</text>`;
+  }
+  // Línea de target mensual
+  if(targetMes > 0){
+    const yTgt = PT + CH * (1 - targetMes/maxVal);
+    s += `<line x1="${PL}" y1="${yTgt}" x2="${W-PR}" y2="${yTgt}" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,4" opacity=".8"/>`;
+    s += `<text x="${W-PR+3}" y="${yTgt+4}" font-size="9" fill="#f59e0b">Target</text>`;
+  }
+  // Barras por mes
+  for(let m=0;m<12;m++){
+    const xBase = PL+m*step+step/2;
+    const vP = monthly.prev[m], vC = monthly.cur[m];
+    if(vP>0){
+      const h=(vP/maxVal)*CH, y=PT+CH-h;
+      s+=`<rect x="${xBase-barW-1}" y="${y}" width="${barW}" height="${h}" fill="#cbd5e1" rx="2"><title>${MONTHS[m]} ${CURRENT_YEAR-1}: ${fmtFull(vP)}</title></rect>`;
+    }
+    if(vC>0){
+      const h=(vC/maxVal)*CH, y=PT+CH-h;
+      s+=`<rect x="${xBase+1}" y="${y}" width="${barW}" height="${h}" fill="#3b82f6" rx="2"><title>${MONTHS[m]} ${CURRENT_YEAR}: ${fmtFull(vC)}</title></rect>`;
+    }
+    s+=`<text x="${xBase}" y="${H-14}" text-anchor="middle" font-size="10" fill="#64748b">${MONTHS[m].slice(0,3)}</text>`;
+  }
+  s += '</svg>';
+  s += `<div style="display:flex;gap:18px;margin-top:4px;font-size:11px;color:#475569">
+    <span><span style="display:inline-block;width:10px;height:10px;background:#3b82f6;border-radius:2px;vertical-align:middle"></span> ${CURRENT_YEAR}</span>
+    <span><span style="display:inline-block;width:10px;height:10px;background:#cbd5e1;border-radius:2px;vertical-align:middle"></span> ${CURRENT_YEAR-1}</span>
+    ${targetMes>0?`<span><span style="display:inline-block;width:14px;height:2px;background:#f59e0b;vertical-align:middle;margin-bottom:1px"></span> Target mensual</span>`:''}
+  </div>`;
+  return s;
+}
+
+function renderVendedor(key){
+  if(!DATA.length) return `<div class="section"><div class="section-title">Sin datos</div><p style="color:#64748b">Tocá Actualizar arriba a la derecha.</p></div>`;
+  const info = VENDEDORES[key];
+  const rows = DATA.filter(r => r.v === info.dbName);
+  if(!rows.length) return `<div class="section">No hay registros para ${info.label} en la base.</div>`;
+
+  // KPIs vendedor
+  const ytd = rows.filter(r=>r.a===CURRENT_YEAR);
+  const ytdUSD = ytd.reduce((s,r)=>s+toUSD(r),0);
+  const prevYearUSD = rows.filter(r=>r.a===CURRENT_YEAR-1).reduce((s,r)=>s+toUSD(r),0);
+  const maxMes = Math.max(...ytd.map(r=>r.m), 0);
+  const runRate = maxMes>0 ? ytdUSD/maxMes*12 : 0;
+  // Promedio mensual: excluir el mes actual si aún no terminó (mes incompleto)
+  const mesesCompletos = (maxMes >= CURRENT_MONTH) ? Math.max(CURRENT_MONTH - 1, 0) : maxMes;
+  const ytdUSDCompletos = mesesCompletos > 0
+    ? ytd.filter(r => r.m <= mesesCompletos).reduce((s,r) => s+toUSD(r), 0)
+    : 0;
+  const avgMes = mesesCompletos > 0 ? ytdUSDCompletos / mesesCompletos : 0;
+  const tendYoY = prevYearUSD>0 ? (runRate/prevYearUSD-1)*100 : null;
+  const nClientesYtd = new Set(ytd.map(r=>r.c)).size;
+
+  // Top clientes YTD
+  const byClient = {};
+  ytd.forEach(r => { byClient[r.c] = (byClient[r.c]||0) + toUSD(r); });
+  const topClientes = Object.entries(byClient).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  // Mismo cliente año pasado para tendencia
+  const byClientPrev = {};
+  rows.filter(r=>r.a===CURRENT_YEAR-1).forEach(r => { byClientPrev[r.c] = (byClientPrev[r.c]||0) + toUSD(r); });
+
+  // Familias
+  const byFam = {}, byFamClientes = {};
+  ytd.forEach(r => {
+    byFam[r.p] = (byFam[r.p]||0) + toUSD(r);
+    if(!byFamClientes[r.p]) byFamClientes[r.p] = new Set();
+    byFamClientes[r.p].add(r.c);
+  });
+  const topFams = Object.entries(byFam).sort((a,b)=>b[1]-a[1]).slice(0,8)
+    .map(([fam, v]) => [fam, v, byFamClientes[fam]?.size || 0]);
+
+  // Evolución mensual: año actual vs año pasado
+  const monthly = {cur: new Array(12).fill(0), prev: new Array(12).fill(0)};
+  rows.forEach(r => {
+    const usd = toUSD(r);
+    if(r.a === CURRENT_YEAR) monthly.cur[r.m-1] += usd;
+    if(r.a === CURRENT_YEAR-1) monthly.prev[r.m-1] += usd;
+  });
+
+  let html = `
+  <div class="context-strip"><b>${info.label}</b> — ${info.verticales}. <br>${info.contextoBase}</div>
+
+  <div class="kpis">
+    <div class="kpi blue"><div class="lbl">YTD ${CURRENT_YEAR}</div><div class="val">${fmtK(ytdUSD)}</div><div class="sub">${maxMes} meses · ${nClientesYtd} clientes</div></div>
+    <div class="kpi ${tendYoY===null?'':tendYoY>=0?'green':'red'}"><div class="lbl">Run rate vs ${CURRENT_YEAR-1}</div><div class="val">${tendYoY===null?'—':(tendYoY>=0?'↑':'↓')+Math.abs(tendYoY).toFixed(0)+'%'}</div><div class="sub">Anualizado ${fmtK(runRate)} vs ${fmtK(prevYearUSD)}</div></div>
+    <div class="kpi"><div class="lbl">Promedio mensual</div><div class="val">${fmtK(avgMes)}</div><div class="sub">${mesesCompletos > 0 ? mesesCompletos+' meses completos' : 'sin meses completos'}${mesesCompletos < maxMes ? ' · excl. '+MONTHS[CURRENT_MONTH-1] : ''}</div></div>
+    <div class="kpi amber"><div class="lbl">Año anterior completo</div><div class="val">${fmtK(prevYearUSD)}</div><div class="sub">${CURRENT_YEAR-1}</div></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="section">
+      <div class="section-title">Evolución mensual <span class="sub">${CURRENT_YEAR} vs ${CURRENT_YEAR-1}</span></div>
+      ${chartMensual(monthly, info.color)}
+    </div>
+    <div class="section">
+      <div class="section-title">Top familias YTD</div>
+      ${chartFamilias(topFams, info.color)}
+    </div>
+  </div>
+
+  <div class="section" style="margin-bottom:22px">
+    <div class="section-title">Top 10 clientes YTD ${CURRENT_YEAR} <span class="sub">con tendencia vs año pasado</span></div>
+    <table><thead><tr><th>Cliente</th><th>USD YTD</th><th>% del total</th><th>${CURRENT_YEAR-1} mismo</th><th>Tendencia</th></tr></thead><tbody>`;
+  const total = topClientes.reduce((s,e)=>s+e[1],0);
+  topClientes.forEach(([c,v])=>{
+    const prev = byClientPrev[c]||0;
+    const yoyMes = maxMes>0 ? ((v/maxMes*12)/prev-1)*100 : null;
+    const tcls = !prev?'trend-flat':yoyMes>=0?'trend-up':'trend-down';
+    const tstr = !prev?'Nuevo':(yoyMes>=0?'↑':'↓')+Math.abs(yoyMes).toFixed(0)+'%';
+    html += `<tr><td>${c}</td><td>${fmtFull(v)}</td><td>${(v/ytdUSD*100).toFixed(1)}%</td><td>${prev>0?fmtK(prev):'—'}</td><td class="${tcls}">${tstr}</td></tr>`;
+  });
+  html += '</tbody></table></div>';
+
+  // Avance del mes en curso vs target individual
+  const tgt = (TARGETS.vendedores && TARGETS.vendedores[key]) || {mensual_usd: 0, comentario: ''};
+  const mesUSD = ventasMesActualVendedor(info.dbName);
+  const diasHab = diasHabilesEnMes(CURRENT_YEAR, CURRENT_MONTH);
+  const diasTrans = diasHabilesTranscurridos(CURRENT_YEAR, CURRENT_MONTH);
+  const diasPct = diasHab>0 ? diasTrans/diasHab*100 : 0;
+  const tgtPct = tgt.mensual_usd>0 ? mesUSD/tgt.mensual_usd*100 : 0;
+  const proyMes = diasTrans>0 ? mesUSD/diasTrans*diasHab : 0;
+  const fillCls = tgtPct >= diasPct-5 ? '' : tgtPct >= diasPct-20 ? 'warn' : 'danger';
+  const patronVend = calcPatronHistorico(DATA.filter(r => r.v === info.dbName), CURRENT_MONTH, CURRENT_DAY);
+
+  html += `
+  <div class="section" style="margin-bottom:22px">
+    <div class="section-title">
+      <span>Mes en curso · ${MONTHS[CURRENT_MONTH-1]} ${CURRENT_YEAR}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:18px;align-items:center">
+      <div>
+        <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;font-weight:700">Vendido ${MONTHS[CURRENT_MONTH-1]}</div>
+        <div style="font-size:24px;font-weight:800;color:#0f172a">${fmtK(mesUSD)}</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+              <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b">Ventas vs target</span>
+              <span style="font-size:13px;font-weight:800;color:${tgtPct>=diasPct-5?'#059669':tgtPct>=diasPct-20?'#d97706':'#dc2626'}">${Math.round(tgtPct)}% <span style="font-size:10px;font-weight:400;color:#94a3b8">${fmtK(mesUSD)} de ${fmtK(tgt.mensual_usd)}</span></span>
+            </div>
+            <div class="progress-bar" style="height:10px">
+              <div class="progress-fill ${fillCls}" style="width:${Math.min(tgtPct,100)}%"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+              <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b">Avance del mes</span>
+              <span style="font-size:13px;font-weight:800;color:#0f172a">${Math.round(diasPct)}% <span style="font-size:10px;font-weight:400;color:#94a3b8">día hábil ${diasTrans} de ${diasHab}</span></span>
+            </div>
+            <div class="progress-bar" style="height:10px">
+              <div style="height:100%;border-radius:var(--pill);background:#94a3b8;width:${Math.min(diasPct,100)}%;transition:width .4s"></div>
+            </div>
+          </div>
+          ${patronVend ? (() => {
+            const p = patronVend;
+            const pc = p.pct>=110?'#059669':p.pct>=85?'#d97706':'#dc2626';
+            return `<div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+                <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#7c3aed">Ritmo histórico</span>
+                <span style="font-size:13px;font-weight:800;color:${pc}">${Math.round(p.pct)}% <span style="font-size:10px;font-weight:400;color:#94a3b8">esperado ${fmtK(p.expectedUSD)} · hoy suele ser el ${p.avgFraccionPct}% del mes</span></span>
+              </div>
+              <div class="progress-bar" style="height:10px">
+                <div style="height:100%;border-radius:var(--pill);background:${pc};width:${Math.min(p.pct,100)}%;opacity:.85;transition:width .4s"></div>
+              </div>
+              <div style="font-size:10px;color:#7c3aed;margin-top:2px">Base: ${p.añosUsados.join('/')}</div>
+            </div>`;
+          })() : ''}
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;font-weight:700">Proyección fin de mes</div>
+        <div style="font-size:18px;font-weight:700;color:${proyMes>=tgt.mensual_usd?'#059669':'#dc2626'}">${fmtK(proyMes)}</div>
+        <div style="font-size:11px;color:#64748b">Falta ${fmtK(Math.max(0,tgt.mensual_usd-mesUSD))} · ${diasHab-diasTrans} días háb.</div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;font-weight:700">Target individual</div>
+        <input type="number" value="${tgt.mensual_usd}" id="tgt-${key}" style="width:100%;padding:6px 8px;border:1px solid #cbd5e0;border-radius:5px;font-size:13px;font-weight:700;color:#1e293b">
+        <button class="btn btn-ghost" style="margin-top:6px;width:100%;font-size:11px;padding:5px" onclick="actualizarTarget('${key}')">💾 Guardar target</button>
+      </div>
+    </div>
+    ${tgt.comentario ? `<div style="font-size:11px;color:#64748b;margin-top:10px;font-style:italic">${tgt.comentario}</div>` : ''}
+  </div>
+  `;
+
+  // Análisis de clientes — 3 paneles
+  html += renderAnalisisClientes(key, info.dbName);
+
+  // Bloque HubSpot del vendedor
+  html += renderHubspotVendedor(key);
+
+  // Checklist + notas + próximos pasos
+  const fechaHoy = new Date().toISOString().slice(0,10);
+  html += `
+  <div class="grid-2-eq">
+    <div class="section">
+      <div class="section-title">Temas a charlar</div>
+      <ul class="checklist" id="checklist-${key}"></ul>
+      <div id="checklist-done-wrap-${key}" style="display:none;margin-top:8px">
+        <div class="checklist-done-title">Temas conversados</div>
+        <ul class="checklist checklist-done" id="checklist-done-${key}"></ul>
+      </div>
+      <div class="add-item">
+        <input type="text" id="new-item-${key}" placeholder="Nuevo tema..." onkeydown="if(event.key==='Enter')agregarItem('${key}')">
+        <button onclick="agregarItem('${key}')">+ Agregar</button>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">Notas de la reunión</div>
+      ${rteHTML('notas-'+key, 'Comentarios, observaciones, contexto...')}
+      <div class="section-title" style="margin-top:18px">Próximos pasos / compromisos</div>
+      ${rteHTML('proximos-'+key, 'Hacer X para fin de mes...')}
+      <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <label style="font-size:12px">Fecha de la reunión:
+          <input type="date" id="fecha-${key}" value="${fechaHoy}" style="padding:5px;border:1px solid #cbd5e0;border-radius:4px;font-family:inherit;font-size:12px;margin-left:6px">
+        </label>
+        <button class="btn btn-save" onclick="guardarReunion('${key}')">💾 Guardar reunión</button>
+        <button class="btn btn-ghost" onclick="cargarHistorial('${key}')">📋 Ver todas</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="historial-${key}" style="display:none">
+    <div class="section-title">Historial de reuniones</div>
+    <div id="historial-list-${key}"></div>
+  </div>
+  `;
+  return html;
+}
+
+// ====== Render Reunión de Equipo ======
+function renderEquipo(){
+  if(!DATA.length) return `<div class="section">Sin datos. Tocá Actualizar.</div>`;
+  const equipo = ['facundo_oroza','federico_caffarelli','lucas_luna'];
+  const diasHab = diasHabilesEnMes(CURRENT_YEAR, CURRENT_MONTH);
+  const diasTrans = diasHabilesTranscurridos(CURRENT_YEAR, CURRENT_MONTH);
+  const diasPct = diasHab>0 ? diasTrans/diasHab*100 : 0;
+
+  // KPIs equipo
+  let totalEquipoMes = 0;
+  let totalEquipoYTD = 0;
+  const byVendor = {};
+  equipo.forEach(k => {
+    const info = VENDEDORES[k];
+    const mes = ventasMesActualVendedor(info.dbName);
+    const ytd = DATA.filter(r=>r.v===info.dbName && r.a===CURRENT_YEAR).reduce((s,r)=>s+toUSD(r),0);
+    const tgt = (TARGETS.vendedores && TARGETS.vendedores[k]) || {mensual_usd: 0};
+    byVendor[k] = {info, mes, ytd, tgt: tgt.mensual_usd, proy: diasTrans>0 ? mes/diasTrans*diasHab : 0};
+    totalEquipoMes += mes;
+    totalEquipoYTD += ytd;
+  });
+  const tgtSum = equipo.reduce((s,k)=>s+(byVendor[k].tgt||0),0);
+  const tgtEquipo = tgtSum > 0 ? tgtSum : (TARGETS.equipo_mensual_usd || 0);
+  const proyEquipo = diasTrans>0 ? totalEquipoMes/diasTrans*diasHab : 0;
+  const pctEquipo = tgtEquipo>0 ? totalEquipoMes/tgtEquipo*100 : 0;
+  const fillCls = pctEquipo >= diasPct-5 ? '' : pctEquipo >= diasPct-20 ? 'warn' : 'danger';
+  const rowsEquipo = DATA.filter(r => equipo.some(k => r.v === VENDEDORES[k].dbName));
+  const patronEquipo = calcPatronHistorico(rowsEquipo, CURRENT_MONTH, CURRENT_DAY);
+
+  let html = `
+  <div class="context-strip">
+    <b>Reunión mensual de equipo</b> · Facundo + Federico + Lucas. INX2/Nacho queda fuera porque es la cartera del dueño.
+    El target equipo es editable y se puede recalcular según contexto del mes (lanzamientos, eventos, llegadas de mercadería).
+  </div>
+
+  <div class="kpis">
+    <div class="kpi blue">
+      <div class="lbl">Vendido ${MONTHS[CURRENT_MONTH-1]} ${CURRENT_YEAR}</div>
+      <div class="val">${fmtK(totalEquipoMes)}</div>
+      <div class="sub">Día hábil ${diasTrans}/${diasHab} (${Math.round(diasPct)}% del mes)</div>
+    </div>
+    <div class="kpi ${pctEquipo>=diasPct-5?'green':'red'}">
+      <div class="lbl">vs Target equipo ${fmtK(tgtEquipo)}</div>
+      <div class="val">${Math.round(pctEquipo)}%</div>
+      <div class="sub">${pctEquipo>=diasPct?'✓ En ritmo':'a ritmo necesita '+fmtK(Math.max(0,tgtEquipo-totalEquipoMes))+' en '+(diasHab-diasTrans)+' días háb.'}</div>
+    </div>
+    <div class="kpi amber">
+      <div class="lbl">Proyección fin de mes</div>
+      <div class="val">${fmtK(proyEquipo)}</div>
+      <div class="sub">Si mantiene ritmo actual</div>
+    </div>
+    <div class="kpi">
+      <div class="lbl">YTD equipo ${CURRENT_YEAR}</div>
+      <div class="val">${fmtK(totalEquipoYTD)}</div>
+      <div class="sub">acumulado del año</div>
+    </div>
+  </div>
+
+  <div class="section" style="margin-bottom:22px">
+    <div class="section-title">
+      <span>Avance del mes · barra del equipo</span>
+      <span class="sub">marca negra = % del mes transcurrido</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b">Ventas vs target</span>
+          <span style="font-size:15px;font-weight:800;color:${pctEquipo>=diasPct-5?'#059669':pctEquipo>=diasPct-20?'#d97706':'#dc2626'}">${Math.round(pctEquipo)}% <span style="font-size:11px;font-weight:400;color:#94a3b8">${fmtK(totalEquipoMes)} de ${fmtK(tgtEquipo)}</span></span>
+        </div>
+        <div class="progress-bar" style="height:13px">
+          <div class="progress-fill ${fillCls}" style="width:${Math.min(pctEquipo,100)}%"></div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b">Avance del mes</span>
+          <span style="font-size:15px;font-weight:800;color:#0f172a">${Math.round(diasPct)}% <span style="font-size:11px;font-weight:400;color:#94a3b8">día hábil ${diasTrans} de ${diasHab}</span></span>
+        </div>
+        <div class="progress-bar" style="height:13px">
+          <div style="height:100%;border-radius:var(--pill);background:#94a3b8;width:${Math.min(diasPct,100)}%;transition:width .4s"></div>
+        </div>
+      </div>
+      ${patronEquipo ? (() => {
+        const p = patronEquipo;
+        const pColor = p.pct>=110?'#059669':p.pct>=85?'#d97706':'#dc2626';
+        const pLabel = p.pct>=110?'Adelantado al ritmo histórico':p.pct>=85?'Dentro del ritmo histórico':'Por debajo del ritmo histórico';
+        return `<div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+            <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#7c3aed">Ritmo histórico</span>
+            <span style="font-size:15px;font-weight:800;color:${pColor}">${Math.round(p.pct)}% <span style="font-size:11px;font-weight:400;color:#94a3b8">esperado ${fmtK(p.expectedUSD)} · hoy suele ser el ${p.avgFraccionPct}% del mes</span></span>
+          </div>
+          <div class="progress-bar" style="height:13px">
+            <div style="height:100%;border-radius:var(--pill);background:${pColor};width:${Math.min(p.pct,100)}%;opacity:.85;transition:width .4s"></div>
+          </div>
+          <div style="font-size:10px;color:#7c3aed;margin-top:3px">${pLabel} · base: ${p.añosUsados.join('/')}</div>
+        </div>`;
+      })() : ''}
+    </div>
+    <div style="margin-top:18px;font-size:12px;color:#475569">
+      <b>Lectura:</b> ${pctEquipo>=diasPct ? 'El equipo va al ritmo necesario para alcanzar el target' : pctEquipo>=diasPct-15 ? 'Atraso leve — recuperable con foco en las próximas semanas' : 'Atraso fuerte — revisar bloqueantes y reasignar prioridades'}.
+    </div>
+  </div>
+
+  <div class="section" style="margin-bottom:22px">
+    <div class="section-title">Tablero por vendedor — ${MONTHS[CURRENT_MONTH-1]} ${CURRENT_YEAR}</div>
+    <div class="team-grid">`;
+
+  const colors = {facundo_oroza:'fa', federico_caffarelli:'fe', lucas_luna:'lu'};
+  equipo.forEach(k => {
+    const d = byVendor[k];
+    const pct = d.tgt>0 ? d.mes/d.tgt*100 : 0;
+    const fc = pct >= diasPct-5 ? '' : pct >= diasPct-20 ? 'warn' : 'danger';
+    const patronV = calcPatronHistorico(DATA.filter(r => r.v === d.info.dbName), CURRENT_MONTH, CURRENT_DAY);
+    const pVColor = patronV && patronV.pct>=110?'#059669':patronV && patronV.pct>=85?'#d97706':'#dc2626';
+    html += `
+      <div class="team-card ${colors[k]}">
+        <div class="name">${d.info.label}</div>
+        <div class="vert">${d.info.verticales}</div>
+        <div class="num-grid">
+          <div class="num-cell"><div class="l">Vendido mes</div><div class="v">${fmtK(d.mes)}</div></div>
+          <div class="num-cell"><div class="l">Target mes</div><div class="v">${fmtK(d.tgt)}</div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+              <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b">Ventas vs target</span>
+              <span style="font-size:12px;font-weight:800;color:${pct>=diasPct-5?'#059669':pct>=diasPct-20?'#d97706':'#dc2626'}">${Math.round(pct)}%</span>
+            </div>
+            <div class="progress-bar" style="height:8px">
+              <div class="progress-fill ${fc}" style="width:${Math.min(pct,100)}%"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+              <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b">Avance del mes</span>
+              <span style="font-size:12px;font-weight:800;color:#0f172a">${Math.round(diasPct)}%</span>
+            </div>
+            <div class="progress-bar" style="height:8px">
+              <div style="height:100%;border-radius:var(--pill);background:#94a3b8;width:${Math.min(diasPct,100)}%;transition:width .4s"></div>
+            </div>
+          </div>
+          ${patronV ? `<div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+              <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#7c3aed">Ritmo histórico</span>
+              <span style="font-size:12px;font-weight:800;color:${pVColor}">${Math.round(patronV.pct)}%</span>
+            </div>
+            <div class="progress-bar" style="height:8px">
+              <div style="height:100%;border-radius:var(--pill);background:${pVColor};width:${Math.min(patronV.pct,100)}%;opacity:.85;transition:width .4s"></div>
+            </div>
+          </div>` : ''}
+        </div>
+        <div class="gap-line">
+          proy. ${fmtK(d.proy)} · YTD ${fmtK(d.ytd)}
+        </div>
+      </div>`;
+  });
+  html += `</div>
+  </div>`;
+
+  // Top cuentas del mes (equipo combinado)
+  const cuentasMes = {};
+  equipo.forEach(k => {
+    const dbName = VENDEDORES[k].dbName;
+    DATA.filter(r => r.v===dbName && r.a===CURRENT_YEAR && r.m===CURRENT_MONTH).forEach(r => {
+      const key = `${r.c}|${k}`;
+      cuentasMes[key] = (cuentasMes[key] || 0) + toUSD(r);
+    });
+  });
+  const topCuentas = Object.entries(cuentasMes).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  html += `<div class="grid-2-eq">
+    <div class="section">
+      <div class="section-title">Top cuentas del mes · equipo <span class="sub">${MONTHS[CURRENT_MONTH-1]} ${CURRENT_YEAR}</span></div>`;
+  if(!topCuentas.length){
+    html += `<p style="color:#94a3b8">Sin ventas registradas todavía este mes.</p>`;
+  } else {
+    html += `<table><thead><tr><th>Cliente</th><th>Vendedor</th><th>USD</th></tr></thead><tbody>`;
+    topCuentas.forEach(([k_combo, v]) => {
+      const [cli, vk] = k_combo.split('|');
+      html += `<tr><td>${cli}</td><td><b style="color:${VENDEDORES[vk].color}">${VENDEDORES[vk].label.split(' ')[0]}</b></td><td>${fmtFull(v)}</td></tr>`;
+    });
+    html += `</tbody></table>`;
+  }
+  html += `</div>`;
+
+  // Eventos próximos
+  const mesActualStr = `${CURRENT_YEAR}-${String(CURRENT_MONTH).padStart(2,'0')}`;
+  const eventosVisibles = EVENTOS_PROXIMOS
+    .filter(e => e.fecha >= mesActualStr)
+    .sort((a,b) => a.fecha.localeCompare(b.fecha))
+    .slice(0,8);
+  html += `<div class="section">
+    <div class="section-title" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Eventos próximos relevantes</span>
+      <button class="btn btn-ghost" style="font-size:11px;padding:3px 10px" onclick="abrirEditorEventos()">✏️ Editar</button>
+    </div>
+    <div class="team-events">
+      <ul>`;
+  if(eventosVisibles.length === 0){
+    html += `<li style="color:#64748b;font-style:italic">Sin eventos próximos — hacé clic en Editar para agregar.</li>`;
+  } else {
+    eventosVisibles.forEach(e => {
+      const ic = e.tipo==='evento'?'📅':e.tipo==='export'?'🌎':'📦';
+      const vLabel = e.vendedor && VENDEDORES[e.vendedor] ? ` <span style="color:${VENDEDORES[e.vendedor].color};font-weight:600">${VENDEDORES[e.vendedor].label.split(' ')[0]}</span>` : '';
+      html += `<li>${ic} <b>${e.fecha}</b> · ${e.titulo}${vLabel}</li>`;
+    });
+  }
+  html += `</ul>
+    </div>
+  </div></div>`;
+
+  // Bloque HubSpot del equipo
+  html += renderHubspotEquipo();
+
+  // Editor de target equipo + Checklist + notas
+  const fechaHoy = new Date().toISOString().slice(0,10);
+  html += `
+  <div class="section" style="margin-bottom:22px">
+    <div class="section-title">Configuración de targets <span class="sub">se guardan al servidor</span></div>
+    ${equipo.map(k => `
+      <div class="target-row">
+        <label style="color:${VENDEDORES[k].color}">${VENDEDORES[k].label}</label>
+        <input type="number" id="tgt-vend-${k}" value="${byVendor[k].tgt}" oninput="recalcTgtEquipo()">
+        <span style="font-size:11px;color:#64748b">USD/mes</span>
+      </div>
+    `).join('')}
+    <div class="target-row" style="border-top:1px solid #e2e8f0;margin-top:6px;padding-top:8px">
+      <label style="font-weight:700;color:#0f172a">Total equipo</label>
+      <span id="tgt-equipo-sum" style="font-size:15px;font-weight:700;color:#2563eb">${fmtK(tgtSum)}</span>
+      <span style="font-size:11px;color:#64748b">USD/mes (suma automática)</span>
+    </div>
+    <div style="margin-top:14px;text-align:right">
+      <button class="btn btn-save" onclick="actualizarTargetsEquipo()">💾 Guardar targets</button>
+    </div>
+  </div>
+
+  <div class="grid-2-eq">
+    <div class="section">
+      <div class="section-title">Temas a charlar con el equipo</div>
+      <ul class="checklist" id="checklist-equipo"></ul>
+      <div id="checklist-done-wrap-equipo" style="display:none;margin-top:8px">
+        <div class="checklist-done-title">Temas conversados</div>
+        <ul class="checklist checklist-done" id="checklist-done-equipo"></ul>
+      </div>
+      <div class="add-item">
+        <input type="text" id="new-item-equipo" placeholder="Nuevo tema..." onkeydown="if(event.key==='Enter')agregarItem('equipo')">
+        <button onclick="agregarItem('equipo')">+ Agregar</button>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">Notas de la reunión</div>
+      ${rteHTML('notas-equipo', 'Decisiones, contexto, observaciones...')}
+      <div class="section-title" style="margin-top:18px">Próximos pasos / compromisos</div>
+      ${rteHTML('proximos-equipo', 'Acción 1 (responsable)...')}
+      <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <label style="font-size:12px">Fecha:
+          <input type="date" id="fecha-equipo" value="${fechaHoy}" style="padding:5px;border:1px solid #cbd5e0;border-radius:4px;font-family:inherit;font-size:12px;margin-left:6px">
+        </label>
+        <button class="btn btn-save" onclick="guardarReunion('equipo')">💾 Guardar reunión</button>
+        <button class="btn btn-ghost" onclick="cargarHistorial('equipo')">📋 Ver todas</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="historial-equipo" style="display:none">
+    <div class="section-title">Historial de reuniones de equipo</div>
+    <div id="historial-list-equipo"></div>
+  </div>
+  `;
+  return html;
+}
+
+async function actualizarTarget(key){
+  const input = document.getElementById('tgt-'+key);
+  const v = parseFloat(input.value) || 0;
+  if(!TARGETS.vendedores) TARGETS.vendedores = {};
+  if(!TARGETS.vendedores[key]) TARGETS.vendedores[key] = {mensual_usd: v, comentario: ''};
+  else TARGETS.vendedores[key].mensual_usd = v;
+  await guardarTargets();
+  renderTodo();
+}
+
+function recalcTgtEquipo(){
+  const equipo = ['facundo_oroza','federico_caffarelli','lucas_luna'];
+  const suma = equipo.reduce((s,k) => {
+    const el = document.getElementById('tgt-vend-'+k);
+    return s + (el ? (parseFloat(el.value)||0) : 0);
+  }, 0);
+  const el = document.getElementById('tgt-equipo-sum');
+  if(el) el.textContent = fmtK(suma);
+}
+
+async function actualizarTargetsEquipo(){
+  if(!TARGETS.vendedores) TARGETS.vendedores = {};
+  ['facundo_oroza','federico_caffarelli','lucas_luna'].forEach(k => {
+    const v = parseFloat(document.getElementById('tgt-vend-'+k).value) || 0;
+    if(!TARGETS.vendedores[k]) TARGETS.vendedores[k] = {mensual_usd: v, comentario: ''};
+    else TARGETS.vendedores[k].mensual_usd = v;
+  });
+  // El target del equipo = suma automática de los individuales
+  TARGETS.equipo_mensual_usd = ['facundo_oroza','federico_caffarelli','lucas_luna']
+    .reduce((s,k) => s + ((TARGETS.vendedores[k]||{}).mensual_usd||0), 0);
+  await guardarTargets();
+  renderTodo();
+}
+
+
+function chartMensual(monthly, color){
+  const W=540, H=200, PL=50, PR=15, PT=15, PB=30;
+  const CW=W-PL-PR, CH=H-PT-PB;
+  const allVals = [...monthly.cur, ...monthly.prev];
+  const maxVal = Math.max(...allVals, 1) * 1.15;
+  const step = CW/12;
+  const barW = Math.min(step*0.36, 15);
+  let s = `<svg viewBox="0 0 ${W} ${H}" class="chart-svg">`;
+  for(let i=0;i<=4;i++){
+    const y=PT+CH*(1-i/4), v=maxVal*i/4;
+    s+=`<line x1="${PL}" y1="${y}" x2="${W-PR}" y2="${y}" stroke="#f0f1f3"/>`;
+    s+=`<text x="${PL-4}" y="${y+4}" text-anchor="end" font-size="9" fill="#94a3b8">${fmtK(v)}</text>`;
+  }
+  for(let m=0;m<12;m++){
+    const xBase = PL+m*step+step/2;
+    const vP = monthly.prev[m], vC = monthly.cur[m];
+    if(vP>0){
+      const h = (vP/maxVal)*CH, y = PT+CH-h;
+      s += `<rect x="${xBase-barW-1}" y="${y}" width="${barW}" height="${h}" fill="#cbd5e1" rx="2"><title>${MONTHS[m]} ${CURRENT_YEAR-1}: ${fmtFull(vP)}</title></rect>`;
+    }
+    if(vC>0){
+      const h = (vC/maxVal)*CH, y = PT+CH-h;
+      s += `<rect x="${xBase+1}" y="${y}" width="${barW}" height="${h}" fill="${color}" rx="2"><title>${MONTHS[m]} ${CURRENT_YEAR}: ${fmtFull(vC)}</title></rect>`;
+    }
+    s += `<text x="${xBase}" y="${H-12}" text-anchor="middle" font-size="10" fill="#64748b">${MONTHS[m]}</text>`;
+  }
+  s += '</svg>';
+  s += `<div style="display:flex;gap:18px;margin-top:6px;font-size:11px;color:#475569">
+    <span><span style="display:inline-block;width:10px;height:10px;background:${color};border-radius:2px;vertical-align:middle"></span> ${CURRENT_YEAR}</span>
+    <span><span style="display:inline-block;width:10px;height:10px;background:#cbd5e1;border-radius:2px;vertical-align:middle"></span> ${CURRENT_YEAR-1}</span>
+  </div>`;
+  return s;
+}
+
+function chartFamilias(fams, color){
+  if(!fams.length) return '<p style="color:#94a3b8;padding:14px">Sin datos</p>';
+  const W = 420, ROW = 28, PL = 90, PR = 90, PT_TOP = 6;
+  const H = PT_TOP + fams.length*ROW + 8;
+  const maxV = fams[0][1] || 1;
+  let s = `<svg viewBox="0 0 ${W} ${H}" class="chart-svg">`;
+  fams.forEach(([fam, v, nCli], i) => {
+    const y = PT_TOP + i*ROW;
+    const bw = (v/maxV)*(W-PL-PR);
+    const nCliStr = nCli != null ? `${nCli} cliente${nCli!==1?'s':''}` : '';
+    s += `<text x="${PL-5}" y="${y+ROW/2+4}" text-anchor="end" font-size="11" fill="#1e293b" font-weight="600">${fam}</text>`;
+    s += `<rect x="${PL}" y="${y+4}" width="${bw}" height="${ROW-10}" fill="${color}" rx="3" opacity=".85"><title>${fam}: ${fmtFull(v)} · ${nCliStr}</title></rect>`;
+    s += `<text x="${PL+bw+5}" y="${y+ROW/2}" font-size="11" fill="#475569" font-weight="600">${fmtK(v)}</text>`;
+    if(nCliStr) s += `<text x="${PL+bw+5}" y="${y+ROW/2+11}" font-size="9" fill="#94a3b8">${nCliStr}</text>`;
+  });
+  s += '</svg>';
+  return s;
+}
+
+// ====== Rich Text Editor ======
+function rteHTML(id, placeholder){
+  return `<div class="rte-wrap">
+    <div class="rte-toolbar" id="tb-${id}">
+      <button class="rte-btn" title="Negrita" onmousedown="event.preventDefault();rteCmd('${id}','bold')"><b>B</b></button>
+      <button class="rte-btn" title="Cursiva" onmousedown="event.preventDefault();rteCmd('${id}','italic')"><i>I</i></button>
+      <button class="rte-btn" title="Subrayado" onmousedown="event.preventDefault();rteCmd('${id}','underline')"><u>U</u></button>
+      <button class="rte-btn" title="Tachado" onmousedown="event.preventDefault();rteCmd('${id}','strikeThrough')"><s>S</s></button>
+      <div class="rte-sep"></div>
+      <select class="rte-select" title="Tamaño" onchange="rteFontSize('${id}',this.value);this.value=''">
+        <option value="">Tamaño</option>
+        <option value="1">Chico</option>
+        <option value="3">Normal</option>
+        <option value="5">Grande</option>
+        <option value="7">Muy grande</option>
+      </select>
+      <div class="rte-sep"></div>
+      <button class="rte-btn" title="Lista con viñetas" onmousedown="event.preventDefault();rteCmd('${id}','insertUnorderedList')">☰</button>
+      <button class="rte-btn" title="Lista numerada" onmousedown="event.preventDefault();rteCmd('${id}','insertOrderedList')">1.</button>
+      <div class="rte-sep"></div>
+      <button class="rte-btn" title="Indentar" onmousedown="event.preventDefault();rteCmd('${id}','indent')">→</button>
+      <button class="rte-btn" title="Quitar indentación" onmousedown="event.preventDefault();rteCmd('${id}','outdent')">←</button>
+      <div class="rte-sep"></div>
+      <button class="rte-btn" title="Limpiar formato" onmousedown="event.preventDefault();rteCmd('${id}','removeFormat')" style="font-size:11px">✕fmt</button>
+      <div class="rte-sep"></div>
+      <div class="rte-color-wrap" id="colorwrap-${id}">
+        <button class="rte-color-btn" title="Color de texto" onmousedown="event.preventDefault();rteTogglePalette('${id}')">
+          A<div class="rte-color-bar" id="colorbar-${id}" style="background:#111827"></div>
+        </button>
+        <div class="rte-palette" id="palette-${id}">
+          <div class="rte-palette-swatch" style="background:#111827" title="Negro"        onmousedown="event.preventDefault();rteColor('${id}','#111827')"></div>
+          <div class="rte-palette-swatch" style="background:#6b7280" title="Gris"         onmousedown="event.preventDefault();rteColor('${id}','#6b7280')"></div>
+          <div class="rte-palette-swatch" style="background:#ef4444" title="Rojo"         onmousedown="event.preventDefault();rteColor('${id}','#ef4444')"></div>
+          <div class="rte-palette-swatch" style="background:#f97316" title="Naranja"      onmousedown="event.preventDefault();rteColor('${id}','#f97316')"></div>
+          <div class="rte-palette-swatch" style="background:#eab308" title="Amarillo"     onmousedown="event.preventDefault();rteColor('${id}','#eab308')"></div>
+          <div class="rte-palette-swatch" style="background:#22c55e" title="Verde"        onmousedown="event.preventDefault();rteColor('${id}','#22c55e')"></div>
+          <div class="rte-palette-swatch" style="background:#3b82f6" title="Azul"         onmousedown="event.preventDefault();rteColor('${id}','#3b82f6')"></div>
+          <div class="rte-palette-swatch" style="background:#8b5cf6" title="Violeta"      onmousedown="event.preventDefault();rteColor('${id}','#8b5cf6')"></div>
+          <div class="rte-palette-swatch" style="background:#ec4899" title="Rosa"         onmousedown="event.preventDefault();rteColor('${id}','#ec4899')"></div>
+          <div class="rte-palette-swatch" style="background:#ffffff;border:1px solid #e5e7eb" title="Blanco" onmousedown="event.preventDefault();rteColor('${id}','#ffffff')"></div>
+          <div class="rte-palette-custom">
+            <label for="colorpick-${id}">Otro color:</label>
+            <input type="color" id="colorpick-${id}" value="#111827"
+              oninput="rteColor('${id}',this.value)"
+              onmousedown="event.stopPropagation()">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="rte-body" id="${id}" contenteditable="true" data-placeholder="${placeholder}"
+      ondragover="event.preventDefault();this.classList.add('drag-over')"
+      ondragleave="this.classList.remove('drag-over')"
+      ondrop="rteDrop('${id}',event)"></div>
+  </div>`;
+}
+
+function rteDrop(id, e){
+  e.preventDefault();
+  const el = document.getElementById(id);
+  el.classList.remove('drag-over');
+  const text = e.dataTransfer.getData('text/plain').trim();
+  if(!text) return;
+
+  el.focus();
+
+  // Intentar insertar en la posición donde se soltó
+  let inserted = false;
+  if(document.caretRangeFromPoint){
+    const range = document.caretRangeFromPoint(e.clientX, e.clientY);
+    if(range && el.contains(range.startContainer)){
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      document.execCommand('insertText', false, text);
+      inserted = true;
+    }
+  }
+  // Fallback: insertar al final
+  if(!inserted){
+    const sel = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+    // Si ya tiene contenido, agregar salto de línea primero
+    if(el.innerHTML.trim() && el.innerHTML !== '<br>'){
+      document.execCommand('insertParagraph', false, null);
+    }
+    document.execCommand('insertText', false, text);
+  }
+
+  // Disparar evento input para que se auto-guarde
+  el.dispatchEvent(new Event('input', {bubbles:true}));
+}
+
+function rteCmd(id, cmd){
+  document.getElementById(id).focus();
+  document.execCommand(cmd, false, null);
+}
+
+function rteColor(id, color){
+  var el = document.getElementById(id);
+  el.focus();
+  document.execCommand('foreColor', false, color);
+  // Actualizar la barra indicadora
+  var bar = document.getElementById('colorbar-'+id);
+  if(bar) bar.style.background = color;
+  // Actualizar el input color si existe
+  var pick = document.getElementById('colorpick-'+id);
+  if(pick) pick.value = color;
+  // Cerrar la paleta
+  var pal = document.getElementById('palette-'+id);
+  if(pal) pal.classList.remove('open');
+}
+
+function rteTogglePalette(id){
+  // Cerrar todas las otras paletas abiertas
+  document.querySelectorAll('.rte-palette.open').forEach(function(p){
+    if(p.id !== 'palette-'+id) p.classList.remove('open');
+  });
+  var pal = document.getElementById('palette-'+id);
+  if(pal) pal.classList.toggle('open');
+}
+
+// Cerrar paleta al hacer click fuera
+document.addEventListener('mousedown', function(e){
+  if(!e.target.closest('.rte-color-wrap')){
+    document.querySelectorAll('.rte-palette.open').forEach(function(p){ p.classList.remove('open'); });
+  }
+});
+
+function rteFontSize(id, size){
+  if(!size) return;
+  document.getElementById(id).focus();
+  document.execCommand('fontSize', false, size);
+}
+
+function bindRTE(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  // Actualizar estado activo de los botones al seleccionar texto
+  el.addEventListener('keyup', () => updateRTEButtons(id));
+  el.addEventListener('mouseup', () => updateRTEButtons(id));
+}
+
+function updateRTEButtons(id){
+  const tb = document.getElementById('tb-'+id);
+  if(!tb) return;
+  ['bold','italic','underline','strikeThrough'].forEach(cmd => {
+    const active = document.queryCommandState(cmd);
+    const map = {bold:'B', italic:'I', underline:'U', strikeThrough:'S'};
+    tb.querySelectorAll('.rte-btn').forEach(btn => {
+      if(btn.title === {bold:'Negrita',italic:'Cursiva',underline:'Subrayado',strikeThrough:'Tachado'}[cmd]){
+        btn.classList.toggle('active', active);
+      }
+    });
+  });
+}
+
+// ====== Checklist + persistencia (servidor + localStorage) ======
+// El estado se guarda en data/estado_reunion.json en el servidor.
+// localStorage actúa solo como caché para acceso síncrono.
+
+let _estadoServidor = {};   // cache en memoria cargado al inicio
+let _autoSaveTimer = null;
+
+async function cargarEstadoServidor(){
+  try {
+    const r = await fetch('/api/estado');
+    const j = await r.json();
+    _estadoServidor = j || {};
+    // Sincronizar al localStorage para acceso síncrono
+    Object.entries(_estadoServidor).forEach(([k, v]) => {
+      localStorage.setItem(k, JSON.stringify(v));
+    });
+  } catch(e){ _estadoServidor = {}; }
+}
+
+function getReunionLocal(key){
+  const lsKey = 'reunion_'+key;
+  // Primero intentar desde caché en memoria (cargada del servidor)
+  if(_estadoServidor[lsKey]) return _estadoServidor[lsKey];
+  try { return JSON.parse(localStorage.getItem(lsKey)) || {checklist:[], notas:'', proximos:''}; }
+  catch(e){ return {checklist:[], notas:'', proximos:''}; }
+}
+
+function setReunionLocal(key, data){
+  const lsKey = 'reunion_'+key;
+  localStorage.setItem(lsKey, JSON.stringify(data));
+  _estadoServidor[lsKey] = data;
+  // Auto-save al servidor con debounce de 1 segundo
+  clearTimeout(_autoSaveTimer);
+  _autoSaveTimer = setTimeout(() => autoGuardarServidor(lsKey, data), 1000);
+}
+
+async function autoGuardarServidor(lsKey, data){
+  try {
+    await fetch('/api/estado', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({[lsKey]: data})
+    });
+  } catch(e){ /* silencioso — se reintentará en el próximo cambio */ }
+}
+
+function bindVendedorEvents(key){
+  const r = getReunionLocal(key);
+  // Render checklist
+  renderChecklist(key, r.checklist);
+  // Cargar contenido en los rich-text editors
+  const notasEl = document.getElementById('notas-'+key);
+  const proximosEl = document.getElementById('proximos-'+key);
+  if(notasEl) notasEl.innerHTML = r.notas || '';
+  if(proximosEl) proximosEl.innerHTML = r.proximos || '';
+  // Bind toolbar buttons
+  bindRTE('notas-'+key);
+  bindRTE('proximos-'+key);
+  // Save on input
+  ['notas','proximos'].forEach(field => {
+    const el = document.getElementById(field+'-'+key);
+    if(el) el.addEventListener('input', () => {
+      const r2 = getReunionLocal(key);
+      r2[field] = el.innerHTML;
+      setReunionLocal(key, r2);
+    });
+  });
+}
+
+function renderAnalisisClientes(key, dbName){
+  const panelId = 'analisis-panel-'+key;
+  const maxMes = Math.max(...DATA.filter(r=>r.a===CURRENT_YEAR && r.v===dbName).map(r=>r.m), CURRENT_MONTH);
+
+  // Estado inicial guardado en el DOM (para controles interactivos)
+  const uid = key.replace(/[^a-z0-9]/g,'_');
+
+  let h = `<div class="section analisis-clientes" style="margin-bottom:22px">
+    <div class="section-title">Análisis de clientes</div>
+    <div class="analisis-tabs" id="atabs-${uid}">
+      <button class="atab active" onclick="analisisTab('${uid}','nuevos')">🆕 Clientes nuevos</button>
+      <button class="atab" onclick="analisisTab('${uid}','reactivar')">♻️ Candidatos a reactivar</button>
+      <button class="atab" onclick="analisisTab('${uid}','ausentes')">📭 Activos ausentes</button>
+    </div>`;
+
+  // ── Panel 1: Clientes nuevos por mes ──
+  const mesesOpts = Array.from({length: maxMes}, (_,i) => {
+    const m = i+1;
+    return `<option value="${m}" ${m===maxMes?'selected':''}>${MONTHS[i]} ${CURRENT_YEAR}</option>`;
+  }).join('');
+  h += `<div class="analisis-body active" id="apanel-${uid}-nuevos">
+    <div class="analisis-ctrl">
+      <label>Mes:</label>
+      <select onchange="analisisRender('${uid}','nuevos','${dbName}',this.value)" id="anuevos-mes-${uid}">
+        ${mesesOpts}
+      </select>
+    </div>
+    <div id="anuevos-lista-${uid}">${renderNuevosMes(dbName, CURRENT_YEAR, maxMes)}</div>
+  </div>`;
+
+  // ── Panel 2: Candidatos a reactivación ──
+  h += `<div class="analisis-body" id="apanel-${uid}-reactivar">
+    <div class="analisis-ctrl">
+      <label>Sin comprar hace más de:</label>
+      <select onchange="analisisRender('${uid}','reactivar','${dbName}',this.value)" id="areact-meses-${uid}">
+        <option value="12">12 meses</option>
+        <option value="18">18 meses</option>
+        <option value="24" selected>24 meses</option>
+        <option value="36">36 meses</option>
+      </select>
+    </div>
+    <div id="areact-lista-${uid}">${renderReactivar(dbName, 24)}</div>
+  </div>`;
+
+  // ── Panel 3: Activos ausentes este año ──
+  h += `<div class="analisis-body" id="apanel-${uid}-ausentes">
+    <div class="analisis-ctrl">
+      <label>Compraron en los últimos</label>
+      <select onchange="analisisRender('${uid}','ausentes','${dbName}',this.value)" id="aausentes-n-${uid}">
+        <option value="1">1 año</option>
+        <option value="2" selected>2 años</option>
+        <option value="3">3 años</option>
+        <option value="4">4 años</option>
+      </select>
+      <label>y aún no compraron en ${CURRENT_YEAR}</label>
+    </div>
+    <div id="aausentes-lista-${uid}">${renderAusentes(dbName, 2)}</div>
+  </div>`;
+
+  h += `</div>`;
+  return h;
+}
+
+function renderNuevosMes(dbName, anio, mes){
+  const nuevos = clientesNuevosMes(dbName, anio, parseInt(mes));
+  if(!nuevos.length) return `<div class="alert-empty">No hubo clientes nuevos en ${MONTHS[parseInt(mes)-1]} ${anio}.</div>`;
+  return `<div class="analisis-count">${nuevos.length} cliente${nuevos.length!==1?'s':''} nuevo${nuevos.length!==1?'s':''} en ${MONTHS[parseInt(mes)-1]} ${anio}</div>
+  <ul class="analisis-list">
+    ${nuevos.map(({cli, v}) => `<li class="info"><b>${cli}</b><span>${fmtK(v)}</span></li>`).join('')}
+  </ul>`;
+}
+
+function renderReactivar(dbName, meses){
+  const lista = clientesCandidatosReactivacion(dbName, parseInt(meses));
+  if(!lista.length) return `<div class="alert-empty">No hay candidatos a reactivar con más de ${meses} meses inactivos.</div>`;
+  return `<div class="analisis-count">${lista.length} cliente${lista.length!==1?'s':''} sin comprar hace +${meses} meses</div>
+  <ul class="analisis-list">
+    ${lista.slice(0,20).map(d => `<li><b>${d.cli}</b><span>Últ. compra: ${MONTHS[d.ultimoMes-1]} ${d.ultimoAnio} · histórico ${fmtK(d.totalHistorico)}</span></li>`).join('')}
+  </ul>`;
+}
+
+function renderAusentes(dbName, nAnios){
+  const lista = clientesActivosQueNoCompraronEsteAnio(dbName, parseInt(nAnios));
+  if(!lista.length) return `<div class="alert-empty">Todos los clientes activos de los últimos ${nAnios} años ya compraron en ${CURRENT_YEAR}. ✓</div>`;
+  return `<div class="analisis-count">${lista.length} cliente${lista.length!==1?'s':''} que compraron en ${CURRENT_YEAR-nAnios}–${CURRENT_YEAR-1} y aún no en ${CURRENT_YEAR}</div>
+  <ul class="analisis-list">
+    ${lista.slice(0,25).map(d => `<li class="warn"><b>${d.cli}</b><span>${fmtK(d.total)} en ${d.añosActivos} año${d.añosActivos!==1?'s':''} (${d.años.join(', ')})</span></li>`).join('')}
+  </ul>`;
+}
+
+function analisisTab(uid, panel){
+  document.querySelectorAll(`#atabs-${uid} .atab`).forEach(b => b.classList.remove('active'));
+  document.querySelectorAll(`[id^="apanel-${uid}-"]`).forEach(p => p.classList.remove('active'));
+  const btn = document.querySelector(`#atabs-${uid} .atab[onclick*="'${panel}'"]`);
+  if(btn) btn.classList.add('active');
+  const pEl = document.getElementById(`apanel-${uid}-${panel}`);
+  if(pEl) pEl.classList.add('active');
+}
+
+function analisisRender(uid, panel, dbName, val){
+  if(panel === 'nuevos'){
+    document.getElementById(`anuevos-lista-${uid}`).innerHTML = renderNuevosMes(dbName, CURRENT_YEAR, val);
+  } else if(panel === 'reactivar'){
+    document.getElementById(`areact-lista-${uid}`).innerHTML = renderReactivar(dbName, val);
+  } else if(panel === 'ausentes'){
+    document.getElementById(`aausentes-lista-${uid}`).innerHTML = renderAusentes(dbName, val);
+  }
+}
+
+function renderChecklist(key, items){
+  const ul = document.getElementById('checklist-'+key);
+  if(!ul) return;
+  ul.innerHTML = '';
+  const visibles = items.filter(item => !item.done);
+  visibles.forEach((item, i) => {
+    // Índice real en el array completo (para mutaciones correctas)
+    const realIdx = items.indexOf(item);
+    const li = document.createElement('li');
+    li.draggable = true;
+    li.innerHTML = `<span class="drag-handle" title="Arrastrar a notas o próximos pasos">⠿</span>
+      <input type="checkbox" ${item.done?'checked':''}>
+      <div class="item-text"><textarea rows="1">${(item.text||'').replace(/</g,'&lt;')}</textarea></div>
+      <button class="item-del" title="Eliminar">×</button>`;
+    li.addEventListener('dragstart', e => {
+      const ta = li.querySelector('textarea');
+      e.dataTransfer.setData('text/plain', ta ? ta.value : (item.text||''));
+      e.dataTransfer.setData('application/checklist-index', String(realIdx));
+      e.dataTransfer.effectAllowed = 'copyMove';
+      setTimeout(() => li.classList.add('dragging'), 0);
+    });
+    li.addEventListener('dragend', () => {
+      li.classList.remove('dragging');
+      ul.querySelectorAll('li').forEach(x => x.classList.remove('drag-target-above','drag-target-below'));
+    });
+    li.addEventListener('dragover', e => {
+      if(!e.dataTransfer.types.includes('application/checklist-index')) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      ul.querySelectorAll('li').forEach(x => x.classList.remove('drag-target-above','drag-target-below'));
+      const rect = li.getBoundingClientRect();
+      li.classList.add(e.clientY < rect.top + rect.height/2 ? 'drag-target-above' : 'drag-target-below');
+    });
+    li.addEventListener('dragleave', () => {
+      li.classList.remove('drag-target-above','drag-target-below');
+    });
+    li.addEventListener('drop', e => {
+      li.classList.remove('drag-target-above','drag-target-below');
+      const srcIdxStr = e.dataTransfer.getData('application/checklist-index');
+      if(srcIdxStr === '') return;
+      e.stopPropagation();
+      e.preventDefault();
+      const srcIdx = parseInt(srcIdxStr, 10);
+      if(isNaN(srcIdx) || srcIdx === realIdx) return;
+      const rect = li.getBoundingClientRect();
+      const insertBefore = e.clientY < rect.top + rect.height/2;
+      const r = getReunionLocal(key);
+      const [moved] = r.checklist.splice(srcIdx, 1);
+      let targetIdx = (srcIdx < realIdx) ? realIdx - 1 : realIdx;
+      if(!insertBefore) targetIdx += 1;
+      r.checklist.splice(targetIdx, 0, moved);
+      setReunionLocal(key, r);
+      renderChecklist(key, r.checklist);
+    });
+    const ta = li.querySelector('textarea');
+    const autoResize = () => { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; };
+    setTimeout(autoResize, 0);
+    ta.addEventListener('input', autoResize);
+    li.querySelector('input[type=checkbox]').onchange = (e) => {
+      const r = getReunionLocal(key);
+      r.checklist[realIdx].done = e.target.checked;
+      setReunionLocal(key, r);
+      if(e.target.checked){
+        li.style.transition = 'opacity .25s';
+        li.style.opacity = '0';
+        setTimeout(() => renderChecklist(key, getReunionLocal(key).checklist), 260);
+      }
+    };
+    ta.oninput = (e) => {
+      const r = getReunionLocal(key);
+      r.checklist[realIdx].text = e.target.value;
+      setReunionLocal(key, r);
+    };
+    li.querySelector('.item-del').onclick = () => {
+      const r = getReunionLocal(key);
+      r.checklist.splice(realIdx, 1);
+      setReunionLocal(key, r);
+      renderChecklist(key, r.checklist);
+    };
+    ul.appendChild(li);
+  });
+
+  // Sección de temas ya conversados (done)
+  const doneWrap = document.getElementById('checklist-done-wrap-'+key);
+  const doneUl = document.getElementById('checklist-done-'+key);
+  const doneItems = items.filter(item => item.done);
+  if(doneWrap) doneWrap.style.display = doneItems.length ? '' : 'none';
+  if(doneUl){
+    doneUl.innerHTML = '';
+    doneItems.forEach((item) => {
+      const realIdx = items.indexOf(item);
+      const li = document.createElement('li');
+      li.className = 'done-item';
+      li.innerHTML = `<span class="done-check" title="Revertir">↩</span><span class="done-text">${(item.text||'').replace(/</g,'&lt;')}</span>`;
+      li.querySelector('.done-check').onclick = () => {
+        const r = getReunionLocal(key);
+        r.checklist[realIdx].done = false;
+        setReunionLocal(key, r);
+        renderChecklist(key, r.checklist);
+      };
+      doneUl.appendChild(li);
+    });
+  }
+}
+
+function agregarItem(key){
+  const input = document.getElementById('new-item-'+key);
+  const txt = input.value.trim();
+  if(!txt) return;
+  const r = getReunionLocal(key);
+  r.checklist.push({text: txt, done: false});
+  setReunionLocal(key, r);
+  input.value = '';
+  renderChecklist(key, r.checklist);
+}
+
+// ====== Guardar reunión al servidor (md persistente) ======
+async function guardarReunion(key){
+  const r = getReunionLocal(key);
+  const fecha = document.getElementById('fecha-'+key).value;
+  let kpis = {}, alertas = [];
+
+  if(key === 'equipo'){
+    // KPIs equipo
+    const equipo = ['facundo_oroza','federico_caffarelli','lucas_luna'];
+    let totalMes = 0, totalYTD = 0;
+    equipo.forEach(k => {
+      const info = VENDEDORES[k];
+      const mes = ventasMesActualVendedor(info.dbName);
+      const ytd = DATA.filter(x=>x.v===info.dbName && x.a===CURRENT_YEAR).reduce((s,x)=>s+toUSD(x),0);
+      const tgt = (TARGETS.vendedores && TARGETS.vendedores[k]) || {mensual_usd:0};
+      kpis[`${info.label} · ${MONTHS[CURRENT_MONTH-1]}`] = `${fmtFull(mes)} / target ${fmtFull(tgt.mensual_usd)} (${tgt.mensual_usd>0?Math.round(mes/tgt.mensual_usd*100):0}%)`;
+      kpis[`${info.label} · YTD`] = fmtFull(ytd);
+      totalMes += mes; totalYTD += ytd;
+    });
+    kpis[`TOTAL EQUIPO · ${MONTHS[CURRENT_MONTH-1]}`] = fmtFull(totalMes);
+    kpis[`TOTAL EQUIPO · YTD ${CURRENT_YEAR}`] = fmtFull(totalYTD);
+    kpis['Target equipo mensual'] = fmtFull(TARGETS.equipo_mensual_usd || 0);
+    kpis['Snapshot tomado'] = new Date().toLocaleString('es-AR');
+  } else {
+    const info = VENDEDORES[key];
+    const rows = DATA.filter(x => x.v === info.dbName);
+    const ytd = rows.filter(x=>x.a===CURRENT_YEAR);
+    const ytdUSD = ytd.reduce((s,x)=>s+toUSD(x),0);
+    const prev = rows.filter(x=>x.a===CURRENT_YEAR-1).reduce((s,x)=>s+toUSD(x),0);
+    const maxMes = Math.max(...ytd.map(x=>x.m),0);
+    const mes = ventasMesActualVendedor(info.dbName);
+    const tgt = (TARGETS.vendedores && TARGETS.vendedores[key]) || {mensual_usd:0};
+    const mesesCompletos = (maxMes >= CURRENT_MONTH) ? Math.max(CURRENT_MONTH-1, 0) : maxMes;
+    const ytdUSDCompletos = mesesCompletos > 0 ? ytd.filter(r=>r.m<=mesesCompletos).reduce((s,r)=>s+toUSD(r),0) : 0;
+    const avgMes = mesesCompletos > 0 ? ytdUSDCompletos / mesesCompletos : 0;
+    kpis = {
+      [`Vendido ${MONTHS[CURRENT_MONTH-1]} ${CURRENT_YEAR}`]: `${fmtFull(mes)} (target ${fmtFull(tgt.mensual_usd)}, ${tgt.mensual_usd>0?Math.round(mes/tgt.mensual_usd*100):0}%)`,
+      [`YTD ${CURRENT_YEAR}`]: fmtFull(ytdUSD),
+      [`${CURRENT_YEAR-1} completo`]: fmtFull(prev),
+      "Promedio mensual YTD": fmtFull(avgMes) + (mesesCompletos>0 && mesesCompletos<maxMes ? ` (${mesesCompletos} meses completos)` : ''),
+      "Snapshot tomado": new Date().toLocaleString('es-AR')
+    };
+    // Alertas detectadas para guardar en el .md
+    const alertasObj = detectarAlertas(info.dbName);
+    alertas = alertasObj.slice(0,8).map(a => a.msg.replace(/<\/?b>/g, '*'));
+  }
+
+  const payload = {
+    fecha,
+    kpis,
+    alertas,
+    notas: r.notas,
+    proximosPasos: r.proximos
+  };
+  try {
+    const res = await fetch('/api/guardar?vendor='+key, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const j = await res.json();
+    if(j.ok){
+      toast('Reunión guardada: '+j.filename, 'success');
+      // Ofrecer limpiar notas y próximos por separado — el checklist siempre se conserva
+      const r2 = getReunionLocal(key);
+      let cambio = false;
+      if(confirm('Reunión guardada ✓\n\n¿Querés limpiar las NOTAS para la próxima reunión?')){
+        r2.notas = ''; cambio = true;
+      }
+      if(confirm('¿Querés limpiar los PRÓXIMOS PASOS / COMPROMISOS para la próxima reunión?')){
+        r2.proximos = ''; cambio = true;
+      }
+      if(cambio){ setReunionLocal(key, r2); renderTodo(); }
+    } else {
+      toast('Error guardando: '+j.msg, 'error');
+    }
+  } catch(e) { toast('Error: '+e.message, 'error'); }
+}
+
+// ====== Historial ======
+async function cargarHistorial(key){
+  const cont = document.getElementById('historial-'+key);
+  const list = document.getElementById('historial-list-'+key);
+  cont.style.display = 'block';
+  list.innerHTML = 'Cargando...';
+  try {
+    const r = await fetch('/api/reuniones?vendor='+key);
+    const j = await r.json();
+    if(!j.ok){ list.innerHTML = 'Error: '+j.msg; return; }
+    if(!j.files.length){ list.innerHTML = '<p style="color:#94a3b8">Sin reuniones guardadas todavía.</p>'; return; }
+    renderHistorialList(key, j.files);
+  } catch(e){ list.innerHTML = 'Error: '+e.message; }
+}
+
+function renderHistorialList(key, files){
+  const list = document.getElementById('historial-list-'+key);
+  list.innerHTML = '';
+  // Ordenar más reciente primero
+  const sorted = [...files].sort((a,b) => b.localeCompare(a));
+  sorted.forEach(f => {
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.dataset.file = f;
+    const chk = document.createElement('input');
+    chk.type = 'checkbox';
+    chk.title = 'Seleccionar para borrar';
+    chk.onchange = () => {
+      div.classList.toggle('selected', chk.checked);
+      actualizarBarraBorrado(key);
+    };
+    const fecha = document.createElement('span');
+    fecha.className = 'date';
+    fecha.textContent = f.replace('.md','');
+    fecha.onclick = () => verReunion(key, f);
+    const when = document.createElement('span');
+    when.className = 'when';
+    when.textContent = '— click para ver';
+    when.onclick = () => verReunion(key, f);
+    div.appendChild(chk);
+    div.appendChild(fecha);
+    div.appendChild(when);
+    list.appendChild(div);
+  });
+  // Barra de borrado (oculta inicialmente)
+  const bar = document.createElement('div');
+  bar.className = 'history-del-bar';
+  bar.id = 'del-bar-'+key;
+  bar.style.display = 'none';
+  bar.innerHTML = `<span id="del-bar-txt-${key}"></span>
+    <button class="btn-cancel" onclick="deseleccionarTodo('${key}')">Cancelar</button>
+    <button onclick="borrarSeleccionadas('${key}')">🗑 Borrar</button>`;
+  list.appendChild(bar);
+}
+
+function actualizarBarraBorrado(key){
+  const list = document.getElementById('historial-list-'+key);
+  const seleccionadas = list.querySelectorAll('.history-item.selected');
+  const bar = document.getElementById('del-bar-'+key);
+  const txt = document.getElementById('del-bar-txt-'+key);
+  if(!bar) return;
+  if(seleccionadas.length === 0){
+    bar.style.display = 'none';
+  } else {
+    bar.style.display = 'flex';
+    txt.textContent = `${seleccionadas.length} reunión${seleccionadas.length>1?'es':''} seleccionada${seleccionadas.length>1?'s':''}`;
+  }
+}
+
+function deseleccionarTodo(key){
+  const list = document.getElementById('historial-list-'+key);
+  list.querySelectorAll('.history-item').forEach(d => {
+    d.classList.remove('selected');
+    const chk = d.querySelector('input[type=checkbox]');
+    if(chk) chk.checked = false;
+  });
+  actualizarBarraBorrado(key);
+}
+
+async function borrarSeleccionadas(key){
+  const list = document.getElementById('historial-list-'+key);
+  const seleccionadas = list.querySelectorAll('.history-item.selected');
+  const files = Array.from(seleccionadas).map(d => d.dataset.file);
+  if(!files.length) return;
+  if(!confirm(`¿Confirmar borrado de ${files.length} reunión${files.length>1?'es':''}?\n\n${files.map(f=>f.replace('.md','')).join('\n')}`)) return;
+  try {
+    const r = await fetch('/api/borrar_reuniones?vendor='+key, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(files)
+    });
+    const j = await r.json();
+    if(j.ok){
+      toast(`${j.borrados.length} reunión${j.borrados.length>1?'es':''} borrada${j.borrados.length>1?'s':''}`, 'success');
+      // Recargar la lista
+      await cargarHistorial(key);
+    } else {
+      toast('Error: '+(j.msg||'desconocido'), 'error');
+    }
+  } catch(e){ toast('Error: '+e.message, 'error'); }
+}
+
+async function verReunion(key, filename){
+  try {
+    const r = await fetch('/api/reunion?vendor='+key+'&file='+encodeURIComponent(filename));
+    const j = await r.json();
+    if(j.ok){
+      document.getElementById('modal-title').textContent = filename.replace('.md','');
+      document.getElementById('modal-body').innerHTML = renderReunionMD(j.contenido);
+      document.getElementById('modal').classList.add('show');
+    } else { toast('Error: '+j.msg, 'error'); }
+  } catch(e){ toast('Error: '+e.message, 'error'); }
+}
+
+function renderReunionMD(md){
+  // Parsear secciones del archivo .md
+  const lines = md.split('\n');
+  const meta = {};
+  const kpis = [];
+  const checklist = [];
+  let notasRaw = '';
+  let proximosRaw = '';
+
+  let seccion = '';
+  for(let i = 0; i < lines.length; i++){
+    const l = lines[i];
+    // Metadatos
+    if(l.startsWith('**Fecha:**'))    { meta.fecha    = l.replace('**Fecha:**','').trim(); continue; }
+    if(l.startsWith('**Guardado:**')) { meta.guardado = l.replace('**Guardado:**','').trim(); continue; }
+    if(l.startsWith('**Snapshot tomado:**')) continue;
+    // Detectar secciones
+    if(l.startsWith('## KPIs'))                     { seccion = 'kpis';      continue; }
+    if(l.startsWith('## Temas conversados'))         { seccion = 'checklist'; continue; }
+    if(l.startsWith('## Notas'))                     { seccion = 'notas';     continue; }
+    if(l.startsWith('## Próximos pasos') ||
+       l.startsWith('## Proximos pasos'))            { seccion = 'proximos';  continue; }
+    if(l.startsWith('## ') || l.startsWith('# '))   { seccion = 'otro';      continue; }
+    // Acumular por sección
+    if(seccion === 'kpis' && l.startsWith('- **')){
+      // "- **Facundo Oroza · Jun:** $20.480 / target $62.000 (33%)"
+      const m = l.match(/^- \*\*(.+?):\*\*\s*(.+)$/);
+      if(m) kpis.push({label: m[1], val: m[2]});
+    } else if(seccion === 'checklist' && (l.startsWith('- [ ]') || l.startsWith('- [x]') || l.startsWith('- [X]'))){
+      const done = l.startsWith('- [x]') || l.startsWith('- [X]');
+      const text = l.replace(/^- \[[ xX]\] /, '');
+      checklist.push({done, text});
+    } else if(seccion === 'notas'){
+      notasRaw += (notasRaw ? '\n' : '') + l;
+    } else if(seccion === 'proximos'){
+      proximosRaw += (proximosRaw ? '\n' : '') + l;
+    }
+  }
+
+  // Renderizar metadata
+  let html = '<div class="rview">';
+
+  if(meta.fecha || meta.guardado){
+    html += '<div class="rview-meta">';
+    if(meta.fecha)    html += `<span><b>Fecha:</b> ${esc(meta.fecha)}</span>`;
+    if(meta.guardado) html += `<span><b>Guardado:</b> ${esc(meta.guardado)}</span>`;
+    html += '</div>';
+  }
+
+  // KPIs — dos formatos: equipo (labels con ·) o vendedor individual
+  if(kpis.length){
+    var _pctCls = function(p){ return p>=80?'green':p>=50?'amber':'red'; };
+    var _kpiCard = function(name, actual, target, pct, isTotal){
+      var cls = pct!==null ? _pctCls(pct) : '';
+      return '<div class="rview-kpi-card'+(isTotal?' total':'')+'">'+
+        '<div class="kc-name">'+esc(name)+'</div>'+
+        '<div class="kc-amounts"><span class="kc-actual">'+esc(actual)+'</span>'+
+        (target?'<span class="kc-sep">/</span><span class="kc-target">'+esc(target)+'</span>':'')+
+        (pct!==null?'<span class="kc-pct '+cls+'">'+pct+'%</span>':'')+
+        '</div>'+
+        (pct!==null?'<div class="kc-bar"><div class="kc-fill '+cls+'" style="width:'+Math.min(pct,100)+'%"></div></div>':'')+
+        '</div>';
+    };
+
+    var esEquipo = kpis.some(function(k){ return k.label.indexOf('·')>=0; });
+
+    if(esEquipo){
+      // ── Formato equipo ──
+      var kpiMes   = kpis.filter(function(k){ return k.label.indexOf('YTD')<0 && k.label.indexOf('Target')<0 && k.label.indexOf('Snapshot')<0; });
+      var kpiYTD   = kpis.filter(function(k){ return k.label.indexOf('YTD')>=0; });
+      var tgtEquip = kpis.find(function(k){ return k.label.indexOf('Target equipo')>=0; });
+      var parseEq  = function(val){
+        var m = val.match(/^\$([0-9.,]+)\s*\/\s*target\s*\$([0-9.,]+)\s*\((\d+)%\)/);
+        if(m) return {actual:'$'+m[1], target:'$'+m[2], pct:parseInt(m[3])};
+        var ms = val.match(/^\$([0-9.,]+)/);
+        return {actual:ms?'$'+ms[1]:val, target:null, pct:null};
+      };
+      var mesVend  = kpiMes.filter(function(k){ return k.label.indexOf('TOTAL')<0; });
+      var mesTotal = kpiMes.find(function(k){ return k.label.indexOf('TOTAL')>=0; });
+      var cols1    = mesVend.length + (mesTotal?1:0) || 1;
+
+      html += '<div class="rview-section"><div class="rview-section-title">📅 Mes actual — ventas vs target</div>';
+      html += '<div class="rview-kpi-row" style="grid-template-columns:repeat('+Math.min(cols1,4)+',1fr)">';
+      mesVend.forEach(function(k){
+        var p=parseEq(k.val), vname=k.label.split('·')[0].trim();
+        html += _kpiCard(vname, p.actual, p.target, p.pct, false);
+      });
+      if(mesTotal){
+        var pt=parseEq(mesTotal.val);
+        if(pt.pct===null && tgtEquip){
+          var an=parseFloat(pt.actual.replace(/[$.,]/g,''))||0, tn=parseFloat(tgtEquip.val.replace(/[$.,]/g,''))||0;
+          if(tn>0){pt.pct=Math.round(an/tn*100); pt.target=tgtEquip.val;}
+        }
+        html += _kpiCard('Total equipo', pt.actual, pt.target, pt.pct, true);
+      }
+      html += '</div>';
+
+      if(kpiYTD.length){
+        var ytdVend  = kpiYTD.filter(function(k){ return k.label.indexOf('TOTAL')<0; });
+        var ytdTotal = kpiYTD.find(function(k){ return k.label.indexOf('TOTAL')>=0; });
+        var cols2    = ytdVend.length + (ytdTotal?1:0) || 1;
+        html += '<div class="rview-ytd-row" style="grid-template-columns:repeat('+Math.min(cols2,4)+',1fr);margin-top:6px">';
+        ytdVend.forEach(function(k){
+          var vname=k.label.split('·')[0].trim();
+          html += '<div class="rview-ytd-card"><span class="yc-name">'+esc(vname)+' YTD</span><span class="yc-val">'+esc(k.val)+'</span></div>';
+        });
+        if(ytdTotal) html += '<div class="rview-ytd-card total"><span class="yc-name">Total YTD</span><span class="yc-val">'+esc(ytdTotal.val)+'</span></div>';
+        html += '</div>';
+      }
+      html += '</div>'; // cierre rview-section
+
+    } else {
+      // ── Formato vendedor individual ──
+      var kVend = kpis.find(function(k){ return k.label.indexOf('Vendido')===0; });
+      var kYTD  = kpis.find(function(k){ return k.label.indexOf('YTD')===0; });
+      var kPrev = kpis.find(function(k){ return k.label.indexOf('completo')>=0; });
+      var kProm = kpis.find(function(k){ return k.label.indexOf('Promedio')>=0; });
+      var parseVend = function(val){
+        var m = val.match(/^\$([0-9.,]+)\s*\(target\s*\$([0-9.,]+),\s*(\d+)%\)/);
+        if(m) return {actual:'$'+m[1], target:'$'+m[2], pct:parseInt(m[3])};
+        var ms = val.match(/^\$([0-9.,]+)/);
+        return {actual:ms?'$'+ms[1]:val, target:null, pct:null};
+      };
+
+      html += '<div class="rview-section"><div class="rview-section-title">📅 Mes actual — ventas vs target</div>';
+      if(kVend){
+        var pv=parseVend(kVend.val), periodo=kVend.label.replace('Vendido ','');
+        html += '<div class="rview-kpi-row" style="grid-template-columns:1fr">';
+        html += _kpiCard(periodo, pv.actual, pv.target, pv.pct, false);
+        html += '</div>';
+      }
+      html += '</div>';
+
+      var extras = [kYTD, kPrev, kProm].filter(Boolean);
+      if(extras.length){
+        html += '<div class="rview-ytd-row" style="grid-template-columns:repeat('+Math.min(extras.length,3)+',1fr);margin-top:6px">';
+        extras.forEach(function(k){
+          html += '<div class="rview-ytd-card"><span class="yc-name">'+esc(k.label)+'</span><span class="yc-val">'+esc(k.val)+'</span></div>';
+        });
+        html += '</div>';
+      }
+    }
+  } // fin if(kpis.length)
+
+  // Checklist
+  if(checklist.length){
+    html += '<div class="rview-section"><div class="rview-section-title">✅ Temas conversados</div>';
+    html += '<ul class="rview-checklist">';
+    checklist.forEach(it => {
+      html += `<li><span class="ci${it.done?' done':''}">${it.done?'✓':''}</span><span>${esc(it.text)}</span></li>`;
+    });
+    html += '</ul></div>';
+  }
+
+  // Notas — contiene HTML del RTE
+  const notasTrimmed = notasRaw.trim();
+  html += '<div class="rview-section"><div class="rview-section-title">📝 Notas de la reunión</div>';
+  if(!notasTrimmed || notasTrimmed === '_(sin definir)_'){
+    html += '<div class="rview-empty">Sin notas registradas.</div>';
+  } else {
+    // Si empieza con tag HTML, renderizar directamente; si no, escapar
+    const isHTML = /^<[a-zA-Z]/.test(notasTrimmed);
+    html += `<div class="rview-richtext">${isHTML ? notasTrimmed : esc(notasTrimmed)}</div>`;
+  }
+  html += '</div>';
+
+  // Próximos pasos — también HTML del RTE
+  const proxTrimmed = proximosRaw.trim();
+  html += '<div class="rview-section"><div class="rview-section-title">🎯 Próximos pasos / compromisos</div>';
+  if(!proxTrimmed || proxTrimmed === '_(sin definir)_'){
+    html += '<div class="rview-empty">Sin próximos pasos registrados.</div>';
+  } else {
+    const isHTML = /^<[a-zA-Z]/.test(proxTrimmed);
+    html += `<div class="rview-richtext">${isHTML ? proxTrimmed : esc(proxTrimmed)}</div>`;
+  }
+  html += '</div>';
+
+  html += '</div>';
+  return html;
+}
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function cerrarModal(){ document.getElementById('modal').classList.remove('show'); }
+
+// ====== Editor de Eventos ======
+function abrirEditorEventos(){
+  const lista = document.getElementById('ev-lista');
+  lista.innerHTML = '';
+  // Mostrar todos ordenados por fecha
+  const todos = [...EVENTOS_PROXIMOS].sort((a,b) => a.fecha.localeCompare(b.fecha));
+  todos.forEach((ev, i) => evRenderFila(ev, i));
+  document.getElementById('modal-eventos').classList.add('show');
+}
+
+function cerrarEditorEventos(){
+  document.getElementById('modal-eventos').classList.remove('show');
+}
+
+function evRenderFila(ev, idx){
+  const lista = document.getElementById('ev-lista');
+  const vendOpts = Object.entries(VENDEDORES).map(([k,v]) =>
+    `<option value="${k}" ${ev.vendedor===k?'selected':''}>${v.label.split(' ')[0]}</option>`).join('');
+  const row = document.createElement('div');
+  row.className = 'ev-row';
+  row.dataset.idx = idx;
+  row.innerHTML = `
+    <input type="month" value="${ev.fecha}" onchange="evActualizar(${idx},'fecha',this.value)">
+    <input type="text" value="${ev.titulo}" placeholder="Descripción del evento" onchange="evActualizar(${idx},'titulo',this.value)">
+    <select onchange="evActualizar(${idx},'tipo',this.value)">
+      <option value="evento" ${ev.tipo==='evento'?'selected':''}>📅 Evento</option>
+      <option value="export" ${ev.tipo==='export'?'selected':''}>🌎 Export</option>
+      <option value="producto" ${ev.tipo==='producto'?'selected':''}>📦 Producto</option>
+    </select>
+    <select onchange="evActualizar(${idx},'vendedor',this.value)">
+      <option value="">— Todos —</option>
+      ${vendOpts}
+    </select>
+    <button class="btn-del" onclick="evEliminar(${idx})" title="Eliminar">🗑</button>`;
+  lista.appendChild(row);
+}
+
+// Buffer local de edición (independiente de EVENTOS_PROXIMOS hasta guardar)
+let _evBuffer = [];
+
+function abrirEditorEventosConBuffer(){
+  _evBuffer = EVENTOS_PROXIMOS.map(e => ({...e})).sort((a,b) => a.fecha.localeCompare(b.fecha));
+  const lista = document.getElementById('ev-lista');
+  lista.innerHTML = '';
+  _evBuffer.forEach((ev, i) => evRenderFilaBuffer(ev, i));
+  document.getElementById('modal-eventos').classList.add('show');
+}
+
+// Sobreescribir la función simple con la de buffer
+function abrirEditorEventos(){
+  _evBuffer = EVENTOS_PROXIMOS.map(e => ({...e})).sort((a,b) => a.fecha.localeCompare(b.fecha));
+  const lista = document.getElementById('ev-lista');
+  lista.innerHTML = '';
+  _evBuffer.forEach((ev, i) => evRenderFilaBuffer(ev, i));
+  document.getElementById('modal-eventos').classList.add('show');
+}
+
+function evRenderFilaBuffer(ev, i){
+  const lista = document.getElementById('ev-lista');
+  const vendOpts = Object.entries(VENDEDORES).map(([k,v]) =>
+    `<option value="${k}" ${ev.vendedor===k?'selected':''}>${v.label.split(' ')[0]}</option>`).join('');
+  const row = document.createElement('div');
+  row.className = 'ev-row';
+  row.dataset.idx = i;
+  row.innerHTML = `
+    <input type="month" value="${ev.fecha}" oninput="_evBuffer[${i}].fecha=this.value">
+    <input type="text" value="${ev.titulo}" placeholder="Descripción" oninput="_evBuffer[${i}].titulo=this.value">
+    <select onchange="_evBuffer[${i}].tipo=this.value">
+      <option value="evento" ${ev.tipo==='evento'?'selected':''}>📅 Evento</option>
+      <option value="export" ${ev.tipo==='export'?'selected':''}>🌎 Export</option>
+      <option value="producto" ${ev.tipo==='producto'?'selected':''}>📦 Producto</option>
+    </select>
+    <select onchange="_evBuffer[${i}].vendedor=this.value">
+      <option value="">— Todos —</option>
+      ${vendOpts}
+    </select>
+    <button class="btn-del" title="Eliminar" onclick="evEliminarBuffer(${i})">🗑</button>`;
+  lista.appendChild(row);
+}
+
+function evEliminarBuffer(i){
+  _evBuffer.splice(i, 1);
+  const lista = document.getElementById('ev-lista');
+  lista.innerHTML = '';
+  _evBuffer.forEach((ev, idx) => evRenderFilaBuffer(ev, idx));
+}
+
+function evAgregarFila(){
+  const mesProx = (() => {
+    const d = new Date(); d.setMonth(d.getMonth()+1);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  })();
+  const nuevoEv = {id: Date.now(), fecha: mesProx, titulo: '', tipo: 'evento', vendedor: ''};
+  _evBuffer.push(nuevoEv);
+  evRenderFilaBuffer(nuevoEv, _evBuffer.length - 1);
+}
+
+async function guardarEventos(){
+  // Asignar IDs a los nuevos (sin id o id temporal)
+  _evBuffer.forEach((e, i) => { if(!e.id) e.id = Date.now() + i; });
+  try {
+    const r = await fetch('/api/eventos', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(_evBuffer)
+    });
+    const j = await r.json();
+    if(j.ok){
+      EVENTOS_PROXIMOS = [..._evBuffer];
+      cerrarEditorEventos();
+      renderTodo();
+      toast('Eventos guardados ✓');
+    } else {
+      toast('Error: ' + j.msg, 'error');
+    }
+  } catch(e){ toast('Error guardando: '+e.message, 'error'); }
+}
+
+// ====== Boot ======
+cargarDatos();
+</script>
+</body>
+</html>

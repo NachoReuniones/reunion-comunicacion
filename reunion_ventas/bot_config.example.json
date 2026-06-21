@@ -1,0 +1,12 @@
+{
+  "_instrucciones": [
+    "1. Creá un bot con @BotFather en Telegram → /newbot → copiá el token acá abajo",
+    "2. Para saber tu user_id: mandá cualquier mensaje al bot y mirá el log del servidor",
+    "   (o usá @userinfobot en Telegram)",
+    "3. Copiá este archivo a data/bot_config.json y completá los campos",
+    "4. La clave de OpenAI es opcional — solo para transcripción de notas de voz"
+  ],
+  "telegram_token": "TU_TOKEN_AQUI",
+  "allowed_users": [],
+  "openai_api_key": ""
+}

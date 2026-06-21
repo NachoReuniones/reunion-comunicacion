@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Reuniones - Comunicación</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>📋 Reuniones - Comunicación</h1>
+            <button class="btn btn-primary" id="newMeetingBtn">+ Nueva Reunión</button>
+        </header>
+
+        <!-- Sidebar: Backlog global de temas -->
+        <aside class="backlog-sidebar">
+            <div>
+                <h2>Backlog de temas</h2>
+                <div id="backlogList" class="backlog-list">
+                    <!-- Se llena dinámicamente -->
+                </div>
+                <div class="add-item">
+                    <input type="text" id="newBacklogItemInput" placeholder="Agregar tema al backlog...">
+                    <button class="btn btn-secondary btn-small" id="addBacklogItemBtn">+</button>
+                </div>
+            </div>
+
+            <div style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 16px;">
+                <h2>Reuniones recientes</h2>
+                <div id="meetingsList" class="meetings-list">
+                    <!-- Se llena dinámicamente -->
+                </div>
+            </div>
+        </aside>
+
+        <!-- Panel principal: Detalle de reunión -->
+        <main class="main-panel">
+            <!-- Vista vacía -->
+            <div id="emptyState" class="empty-state">
+                <p>Selecciona una reunión o crea una nueva para empezar</p>
+            </div>
+
+            <!-- Vista: Detalle de reunión -->
+            <div id="meetingDetail" class="hidden">
+                <div class="meeting-header">
+                    <input type="date" id="meetingDate" class="meeting-date">
+                    <button class="btn btn-danger btn-small" id="deleteMeetingBtn">Eliminar reunión</button>
+                </div>
+
+                <!-- Temas conversados en esta reunión -->
+                <section class="section">
+                    <h3>Temas en esta reunión</h3>
+                    <div id="topicsInMeeting" class="topics-list drop-zone" data-drop-type="topics">
+                        <!-- Temas arrastrados desde el backlog -->
+                    </div>
+                </section>
+
+                <!-- Notas de la reunión -->
+                <section class="section">
+                    <h3>Notas de la reunión</h3>
+                    <div id="notesDropContainer" class="notes-drop-container">
+                        <textarea id="notesField" placeholder="Escribe las notas aquí o arrastra temas..."></textarea>
+                    </div>
+                </section>
+
+                <!-- Próximos pasos -->
+                <section class="section">
+                    <h3>Próximos pasos / Compromisos</h3>
+                    <textarea id="nextStepsField" placeholder="Próximas acciones..."></textarea>
+                </section>
+
+                <button class="btn btn-primary" id="saveMeetingBtn">Guardar reunión</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal para crear nueva reunión -->
+    <div id="newMeetingModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Nueva Reunión</h2>
+            <div class="form-group">
+                <label for="newMeetingDate">Fecha de la reunión:</label>
+                <input type="date" id="newMeetingDate">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="confirmNewMeetingBtn">Crear</button>
+                <button class="btn btn-secondary" id="cancelNewMeetingBtn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "reunion-server",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "--directory", "C:\\Users\\usuario\\OneDrive\\Escritorio\\CLAUDE"],
+      "port": 8000,
+      "autoPort": true
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "fecha": "2026-06",
+    "titulo": "Retail 100 Farmacias AR",
+    "tipo": "evento",
+    "vendedor": ""
+  },
+  {
+    "id": 2,
+    "fecha": "2026-06",
+    "titulo": "Reunión Equipetrol Colombia",
+    "tipo": "export",
+    "vendedor": "inx2_nacho"
+  },
+  {
+    "id": 3,
+    "fecha": "2026-06",
+    "titulo": "Llega contenedor VANG + VIKS",
+    "tipo": "producto",
+    "vendedor": ""
+  },
+  {
+    "id": 1781207679411,
+    "fecha": "2026-07",
+    "titulo": "Ingreso de 100 y 50 Holt",
+    "tipo": "producto",
+    "vendedor": ""
+  },
+  {
+    "id": 5,
+    "fecha": "2026-09",
+    "titulo": "Refuerzo HOLT (+1.000u)",
+    "tipo": "producto",
+    "vendedor": ""
+  },
+  {
+    "id": 6,
+    "fecha": "2026-08",
+    "titulo": "Retail 100 Farmacias MX (a confirmar)",
+    "tipo": "evento",
+    "vendedor": ""
+  },
+  {
+    "id": 7,
+    "fecha": "2026-10",
+    "titulo": "Viaje a Hong Kong + Guangzhou + Shenzhen",
+    "tipo": "export",
+    "vendedor": ""
+  },
+  {
+    "id": 8,
+    "fecha": "2026-11",
+    "titulo": "Evento Surtidores Rep. Dominicana",
+    "tipo": "evento",
+    "vendedor": "inx2_nacho"
+  }
+]

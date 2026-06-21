@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luctron 2026 — Mapa Estratégico</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;background:#f4f6f8;color:#0f172a;font-size:13px;line-height:1.45}
+  .page{max-width:1500px;margin:0 auto;padding:24px 32px 40px}
+  header.hero{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#2b6cb0 100%);color:#fff;padding:28px 36px;border-radius:14px;margin-bottom:22px;box-shadow:0 4px 18px rgba(15,23,42,.18)}
+  header.hero h1{font-size:26px;font-weight:800;letter-spacing:.3px;margin-bottom:4px}
+  header.hero .subtitle{font-size:13px;opacity:.78;margin-bottom:18px}
+  .target-strip{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  .strip-cell{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:10px;padding:14px 18px}
+  .strip-cell .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.7;margin-bottom:6px}
+  .strip-cell .val{font-size:24px;font-weight:800;color:#fff;line-height:1}
+  .strip-cell .sub{font-size:11px;opacity:.7;margin-top:6px}
+  .strip-cell.gap{background:linear-gradient(135deg,#7f1d1d,#dc2626);border-color:transparent}
+
+  section{margin-bottom:22px}
+  .section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .section-head h2{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#475569}
+  .section-head .badge{font-size:10px;color:#64748b;padding:3px 9px;background:#e2e8f0;border-radius:999px}
+
+  /* MARKETS */
+  .markets{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+  .mkt{background:#fff;border-radius:12px;padding:18px 18px 16px;box-shadow:0 2px 8px rgba(15,23,42,.06);border-top:5px solid #cbd5e1;position:relative;display:flex;flex-direction:column}
+  .mkt .flag{font-size:24px;margin-bottom:6px}
+  .mkt .country{font-size:14px;font-weight:800;color:#0f172a;margin-bottom:3px}
+  .mkt .channel{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:10px}
+  .mkt .status{display:inline-block;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:700;margin-bottom:10px;align-self:flex-start;text-transform:uppercase;letter-spacing:.5px}
+  .status.active{background:#dcfce7;color:#166534}
+  .status.pipeline{background:#fef3c7;color:#92400e}
+  .status.exploratory{background:#dbeafe;color:#1e40af}
+  .status.future{background:#f3e8ff;color:#6b21a8}
+  .mkt .partner{font-size:12px;color:#334155;margin-bottom:6px;font-weight:600}
+  .mkt .partner small{display:block;color:#94a3b8;font-weight:400;font-size:11px;margin-top:2px}
+  .mkt .figure{margin-top:auto;padding-top:10px;border-top:1px dashed #e2e8f0;font-size:12px;color:#475569}
+  .mkt .figure strong{color:#0f172a;font-size:14px;display:block}
+  .mkt.ar{border-top-color:#2563eb}
+  .mkt.uy{border-top-color:#0891b2}
+  .mkt.co{border-top-color:#f59e0b}
+  .mkt.mx{border-top-color:#10b981}
+  .mkt.ca{border-top-color:#8b5cf6}
+
+  /* LEVERS */
+  .levers{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .lever{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(15,23,42,.06)}
+  .lever h3{font-size:14px;font-weight:800;color:#0f172a;margin-bottom:4px}
+  .lever .sub{font-size:11px;color:#64748b;margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px}
+  .lever-item{padding:10px 0;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:start;gap:10px}
+  .lever-item:last-child{border-bottom:0}
+  .lever-item .who{font-weight:700;color:#0f172a;font-size:12px}
+  .lever-item .what{font-size:11px;color:#64748b;margin-top:2px}
+  .lever-item .num{font-size:12px;font-weight:700;color:#1e40af;white-space:nowrap}
+
+  /* CLIENTE ANCLA */
+  .anchor-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px}
+  .anchor{background:linear-gradient(135deg,#fff,#fef9ec);border-radius:12px;padding:22px 24px;box-shadow:0 3px 12px rgba(15,23,42,.08);border-left:5px solid #f59e0b}
+  .anchor h3{font-size:16px;font-weight:800;color:#0f172a;margin-bottom:2px}
+  .anchor .anchor-sub{font-size:11px;color:#92400e;font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px}
+  .anchor .desc{font-size:12px;color:#475569;margin-bottom:14px}
+  .anchor .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+  .anchor .stat{background:#fff;padding:10px 12px;border-radius:8px;border:1px solid #fde68a}
+  .anchor .stat .l{font-size:9px;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:.5px}
+  .anchor .stat .v{font-size:18px;font-weight:800;color:#0f172a;margin-top:2px}
+  .anchor .lines{display:flex;flex-wrap:wrap;gap:6px}
+  .anchor .ln{background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:4px 9px;font-size:11px;color:#334155;font-weight:600}
+  .anchor .ln.imp{background:#fef3c7;border-color:#fde68a;color:#92400e}
+  .anchor .warn{font-size:11px;color:#92400e;padding:8px 12px;background:#fef3c7;border-radius:6px;margin-top:12px;border-left:3px solid #f59e0b}
+
+  /* IMPORTED LINES */
+  .imported{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(15,23,42,.06)}
+  .imp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
+  .imp-card{background:#fafbfc;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;position:relative}
+  .imp-card .ln-name{font-size:15px;font-weight:800;color:#0f172a;letter-spacing:.5px}
+  .imp-card .ln-origin{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
+  .imp-card .ln-use{font-size:11px;color:#475569;margin-top:8px;line-height:1.4}
+  .imp-card .ln-num{margin-top:10px;padding-top:10px;border-top:1px dashed #e5e7eb;display:flex;justify-content:space-between;font-size:11px}
+  .imp-card .ln-num .n{font-weight:800;color:#0f172a;font-size:14px}
+  .imp-card .pill{position:absolute;top:12px;right:12px;font-size:9px;font-weight:700;padding:3px 7px;border-radius:999px;text-transform:uppercase;letter-spacing:.4px}
+  .pill.ok{background:#dcfce7;color:#166534}
+  .pill.new{background:#dbeafe;color:#1e40af}
+  .pill.scaling{background:#fef3c7;color:#92400e}
+
+  /* TIMELINE */
+  .timeline{background:#fff;border-radius:12px;padding:22px 24px;box-shadow:0 2px 8px rgba(15,23,42,.06);overflow-x:auto}
+  .tl-track{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-top:14px;min-width:900px}
+  .tl-month{border-top:3px solid #e2e8f0;padding-top:12px;position:relative;min-height:140px}
+  .tl-month.current{border-top-color:#2563eb}
+  .tl-month.peak{border-top-color:#10b981}
+  .tl-month-name{font-size:11px;font-weight:800;color:#0f172a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+  .tl-event{background:#f1f5f9;border-left:3px solid #2563eb;padding:6px 9px;margin-bottom:6px;border-radius:0 6px 6px 0;font-size:10.5px;color:#1e3a5f;line-height:1.35}
+  .tl-event.export{border-left-color:#10b981;background:#f0fdf4;color:#14532d}
+  .tl-event.catalog{border-left-color:#f59e0b;background:#fffbeb;color:#78350f}
+  .tl-event.event{border-left-color:#8b5cf6;background:#faf5ff;color:#581c87}
+  .tl-event b{display:block;font-weight:800;margin-bottom:1px}
+
+  /* CIERRE 2026 PROJECTION */
+  .projection{background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 8px rgba(15,23,42,.06)}
+  .waterfall{display:flex;align-items:flex-end;gap:12px;margin-top:18px;padding:20px 10px 8px;border-bottom:2px solid #e2e8f0;min-height:240px}
+  .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative}
+  .bar{width:80%;border-radius:6px 6px 0 0;display:flex;align-items:flex-end;justify-content:center;color:#fff;font-weight:700;font-size:11px;padding-bottom:6px;min-height:24px;transition:all .3s}
+  .bar-label{font-size:10px;color:#475569;text-align:center;font-weight:600;line-height:1.3}
+  .bar-label .v{display:block;font-size:13px;color:#0f172a;font-weight:800;margin-top:3px}
+  .bar.dom{background:linear-gradient(180deg,#3b82f6,#1e40af)}
+  .bar.anka{background:linear-gradient(180deg,#fbbf24,#d97706)}
+  .bar.holt{background:linear-gradient(180deg,#fb923c,#c2410c)}
+  .bar.newp{background:linear-gradient(180deg,#a78bfa,#6d28d9)}
+  .bar.uy{background:linear-gradient(180deg,#22d3ee,#0e7490)}
+  .bar.co{background:linear-gradient(180deg,#34d399,#047857)}
+  .bar.mx{background:linear-gradient(180deg,#fb7185,#9f1239)}
+  .bar.total{background:linear-gradient(180deg,#0f172a,#1e3a5f)}
+  .ann{background:#fef3c7;border:1px solid #fde68a;padding:10px 14px;border-radius:8px;font-size:11px;color:#78350f;margin-top:14px;line-height:1.5}
+
+  /* TEAM FOOTER */
+  .team{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(15,23,42,.06)}
+  .team-member{padding:12px 14px;border-left:4px solid #cbd5e1;background:#f9fafb;border-radius:0 8px 8px 0}
+  .team-member.fa{border-left-color:#2563eb}
+  .team-member.fe{border-left-color:#10b981}
+  .team-member.lu{border-left-color:#f59e0b}
+  .team-member.in{border-left-color:#8b5cf6}
+  .team-member .name{font-weight:800;color:#0f172a;font-size:13px}
+  .team-member .role{font-size:10.5px;color:#64748b;margin:3px 0 6px;text-transform:uppercase;letter-spacing:.4px;font-weight:600}
+  .team-member .verts{font-size:11px;color:#334155;line-height:1.4}
+  .partner-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+  .partner-cell{background:#f9fafb;padding:14px 16px;border-radius:10px;border:1px dashed #cbd5e0}
+  .partner-cell strong{display:block;color:#0f172a;font-size:13px;margin-bottom:4px}
+  .partner-cell small{color:#64748b;font-size:11px;line-height:1.5}
+
+  .legend{font-size:10px;color:#94a3b8;margin-top:18px;text-align:right}
+  .legend .dot{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:middle;margin:0 4px}
+  @media print{
+    body{background:#fff}
+    .page{padding:12px}
+    header.hero{box-shadow:none}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="hero">
+  <h1>⚡ Luctron LED Lighting — Mapa Estratégico 2026</h1>
+  <div class="subtitle">Foto consolidada al 27/05/2026 · pensada para discutir crecimiento y palancas hacia cierre de año</div>
+  <div class="target-strip">
+    <div class="strip-cell">
+      <div class="lbl">Posición actual</div>
+      <div class="val">$200–280M / mes</div>
+      <div class="sub">ARS facturados · ~USD 135–190K al TC actual</div>
+    </div>
+    <div class="strip-cell" style="background:rgba(34,197,94,.18);border-color:rgba(34,197,94,.35)">
+      <div class="lbl">Target operativo</div>
+      <div class="val">$350M / mes</div>
+      <div class="sub">ARS · "para estar tranquilos" — meta interna 2026</div>
+    </div>
+    <div class="strip-cell gap">
+      <div class="lbl">Brecha promedio</div>
+      <div class="val">+$70–150M / mes</div>
+      <div class="sub">~USD 45–100K adicionales / mes · contexto macro AR delicado</div>
+    </div>
+  </div>
+</header>
+
+<!-- MERCADOS -->
+<section>
+  <div class="section-head"><h2>4+ Mercados — donde está el negocio hoy y donde va</h2><span class="badge">Exportación como motor 2026</span></div>
+  <div class="markets">
+    <div class="mkt ar">
+      <div class="flag">🇦🇷</div>
+      <div class="country">Argentina</div>
+      <div class="channel">Doméstico — venta directa</div>
+      <span class="status active">Core · activo</span>
+      <div class="partner">Equipo Ventas Luctron<small>Facundo · Federico · Lucas · INX2</small></div>
+      <div class="figure">Run rate 2026<strong>~USD 1.7–2.0M anual</strong></div>
+    </div>
+    <div class="mkt uy">
+      <div class="flag">🇺🇾</div>
+      <div class="country">Uruguay</div>
+      <div class="channel">Canal — distribuidor</div>
+      <span class="status active">Activo · 5 meses</span>
+      <div class="partner">ARPEC Uruguay S.A.<small>Importa y distribuye a sus estaciones</small></div>
+      <div class="figure">Proyectado<strong>~USD 88K anual</strong></div>
+    </div>
+    <div class="mkt co">
+      <div class="flag">🇨🇴</div>
+      <div class="country">Colombia</div>
+      <div class="channel">Canal — distribuidor</div>
+      <span class="status pipeline">Reunión inminente</span>
+      <div class="partner">Equipetrol SA<small>47 años · sin iluminación en portfolio</small></div>
+      <div class="figure">Aporte si cierra en H1<strong>USD 20–50K</strong></div>
+    </div>
+    <div class="mkt mx">
+      <div class="flag">🇲🇽</div>
+      <div class="country">México</div>
+      <div class="channel">Evento · vertical farma</div>
+      <span class="status exploratory">A definir (Río de Janeiro)</span>
+      <div class="partner">Retail 100 Farmacias MX<small>Focus Media · agosto 2026</small></div>
+      <div class="figure">Inversión estimada<strong>USD 12–16K</strong></div>
+    </div>
+    <div class="mkt ca">
+      <div class="flag">🌎</div>
+      <div class="country">Centroamérica</div>
+      <div class="channel">Evento · estaciones servicio</div>
+      <span class="status future">Confirmado · Rep. Dominicana</span>
+      <div class="partner">Evento Surtidores<small>Noviembre 2026 · abastecer toda CA</small></div>
+      <div class="figure">Aporte 2026<strong>TBD · sembrado para 2027</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRES PALANCAS -->
+<section>
+  <div class="section-head"><h2>Tres palancas de crecimiento en paralelo</h2><span class="badge">Ejes complementarios, no excluyentes</span></div>
+  <div class="levers">
+    <div class="lever">
+      <h3>1. Equipo doméstico</h3>
+      <div class="sub">Sostener y crecer en Argentina</div>
+      <div class="lever-item"><div><div class="who">Facundo Oroza</div><div class="what">Farma · Logística · Industria</div></div><div class="num">$812K 2025</div></div>
+      <div class="lever-item"><div><div class="who">Federico Caffarelli</div><div class="what">Estaciones de servicio (95%)</div></div><div class="num">$413K 2025</div></div>
+      <div class="lever-item"><div><div class="who">Lucas Luna</div><div class="what">Mix: deportivo, oficinas, universidades, industria</div></div><div class="num">$90K 2025</div></div>
+      <div class="lever-item"><div><div class="who">INX2 / Nacho</div><div class="what">Cuentas históricas</div></div><div class="num">$211K 2025</div></div>
+    </div>
+    <div class="lever">
+      <h3>2. Catálogo importado</h3>
+      <div class="sub">Apalancamiento de margen + novedad</div>
+      <div class="lever-item"><div><div class="who">ANKA (China)</div><div class="what">Motor de Facundo en logística</div></div><div class="num">$218K run rate</div></div>
+      <div class="lever-item"><div><div class="who">HOLT</div><div class="what">Estacionamientos, supermercados, agro</div></div><div class="num">$170–200K proy.</div></div>
+      <div class="lever-item"><div><div class="who">VANG</div><div class="what">Proyectores deportivos · llega junio</div></div><div class="num">Lanzamiento</div></div>
+      <div class="lever-item"><div><div class="who">VIKS</div><div class="what">Alumbrado público · llega junio</div></div><div class="num">Lanzamiento</div></div>
+    </div>
+    <div class="lever">
+      <h3>3. Exportación LATAM</h3>
+      <div class="sub">Mitigación contexto macro AR</div>
+      <div class="lever-item"><div><div class="who">Arpec Uruguay</div><div class="what">Activo desde oct/25 · modelo probado</div></div><div class="num">$88K proy.</div></div>
+      <div class="lever-item"><div><div class="who">Equipetrol Colombia</div><div class="what">Reunión en 2 semanas</div></div><div class="num">$20–50K H2</div></div>
+      <div class="lever-item"><div><div class="who">Retail 100 México</div><div class="what">Evento agosto · vertical farma</div></div><div class="num">TBD</div></div>
+      <div class="lever-item"><div><div class="who">Surtidores Rep. Dom.</div><div class="what">Evento noviembre · Centroamérica</div></div><div class="num">TBD</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CLIENTE ANCLA + IMPORTADAS -->
+<section>
+  <div class="section-head"><h2>Cuenta ancla nacional + Estado de líneas importadas</h2></div>
+  <div class="anchor-grid">
+    <div class="anchor">
+      <h3>Llama Figueroa</h3>
+      <div class="anchor-sub">Cliente ancla · contratista de gran cadena retail</div>
+      <div class="desc">Multi-línea Luctron. Crecimiento explosivo en 2026 — ya superó todo el año pasado en 4 meses.</div>
+      <div class="stats">
+        <div class="stat"><div class="l">2025 completo</div><div class="v">$68K</div></div>
+        <div class="stat"><div class="l">2026 YTD (4 m)</div><div class="v">$133K</div></div>
+        <div class="stat"><div class="l">Proy. cierre</div><div class="v">$300–350K</div></div>
+      </div>
+      <div class="lines">
+        <span class="ln">LOEN ★ caballito de batalla</span>
+        <span class="ln">HOLT</span>
+        <span class="ln">FREI</span>
+        <span class="ln">P3</span>
+        <span class="ln">LIER</span>
+        <span class="ln imp">800 ANKA en camino · específico</span>
+      </div>
+      <div class="warn">Magnitud depende del ritmo de obra del cliente final. Mantener diálogo cercano con Facundo para anticipar picos.</div>
+    </div>
+
+    <div class="imported">
+      <h3 style="font-size:14px;font-weight:800;color:#0f172a;margin-bottom:2px">Líneas importadas — pipeline H2 2026</h3>
+      <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px">Motor diferenciado de margen</div>
+      <div class="imp-grid">
+        <div class="imp-card">
+          <span class="pill ok">EN ESCALA</span>
+          <div class="ln-name">ANKA</div>
+          <div class="ln-origin">China · vía Facundo</div>
+          <div class="ln-use">Logística (Celsur SA 150u en mayo · Conarpesa · Agropez) + 800u para Llama Figueroa</div>
+          <div class="ln-num"><span>Run rate 2026</span><span class="n">$218K</span></div>
+        </div>
+        <div class="imp-card">
+          <span class="pill scaling">SOLD OUT H1</span>
+          <div class="ln-name">HOLT</div>
+          <div class="ln-origin">Importado · multi-vendedor</div>
+          <div class="ln-use">Estacionamientos, supermercados, agro (silo bolsa). +1.150u entran jul/ago</div>
+          <div class="ln-num"><span>Proy. 2026</span><span class="n">$170–200K</span></div>
+        </div>
+        <div class="imp-card">
+          <span class="pill new">LANZAMIENTO</span>
+          <div class="ln-name">VANG</div>
+          <div class="ln-origin">Importado · vía Lucas</div>
+          <div class="ln-use">Proyectores modulares deportivos + columnas grandes espacios</div>
+          <div class="ln-num"><span>Llega</span><span class="n">Mediados jun</span></div>
+        </div>
+        <div class="imp-card">
+          <span class="pill new">LANZAMIENTO</span>
+          <div class="ln-name">VIKS</div>
+          <div class="ln-origin">Importado · vía Lucas</div>
+          <div class="ln-use">Alumbrado público (barrios, parques industriales, estacionamientos)</div>
+          <div class="ln-num"><span>Llega</span><span class="n">Mediados jun</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section>
+  <div class="section-head"><h2>Timeline ejecutivo 2026 — hitos críticos</h2><span class="badge">Mayo → Diciembre</span></div>
+  <div class="timeline">
+    <div class="tl-track">
+      <div class="tl-month current">
+        <div class="tl-month-name">MAYO · hoy</div>
+        <div class="tl-event event"><b>Retail 100 Farma AR</b>Nacho + Facundo</div>
+        <div class="tl-event export"><b>Equipetrol CO</b>Reunión · abre Nacho</div>
+        <div class="tl-event"><b>Pre-MX</b>Reunión Río de Janeiro</div>
+      </div>
+      <div class="tl-month">
+        <div class="tl-month-name">JUNIO</div>
+        <div class="tl-event catalog"><b>Llega contenedor</b>VANG + VIKS · Lucas arranca</div>
+      </div>
+      <div class="tl-month">
+        <div class="tl-month-name">JULIO</div>
+        <div class="tl-event catalog"><b>Refuerzo HOLT</b>+150 u</div>
+        <div class="tl-event"><b>Estacionalidad fuerte</b>Q3 arranca</div>
+      </div>
+      <div class="tl-month peak">
+        <div class="tl-month-name">AGOSTO · pico</div>
+        <div class="tl-event catalog"><b>Refuerzo HOLT</b>+1.000 u (x7)</div>
+        <div class="tl-event event"><b>Retail 100 MX</b>condicional · Nacho + Facundo</div>
+        <div class="tl-event export"><b>Reuniones MX</b>partners tipo Arpec (vía Surtidores)</div>
+      </div>
+      <div class="tl-month peak">
+        <div class="tl-month-name">SEPT</div>
+        <div class="tl-event"><b>Q3 cierre</b>mes históricamente fuerte</div>
+        <div class="tl-event catalog"><b>Tracción VANG/VIKS</b>primer trimestre real</div>
+      </div>
+      <div class="tl-month">
+        <div class="tl-month-name">OCT</div>
+        <div class="tl-event event"><b>Viaje Oriente</b>Nacho + Hernán</div>
+        <div class="tl-event catalog"><b>HK Lighting Fair</b>Hong Kong · Guangzhou · Shenzhen</div>
+      </div>
+      <div class="tl-month peak">
+        <div class="tl-month-name">NOV</div>
+        <div class="tl-event event"><b>Evento Surtidores</b>República Dominicana · CA</div>
+        <div class="tl-event"><b>Q4 fuerte</b>cierre comercial estaciones</div>
+      </div>
+      <div class="tl-month">
+        <div class="tl-month-name">DIC · cierre</div>
+        <div class="tl-event"><b>Histórico flojo</b>compensar con Q3/Q4</div>
+        <div class="tl-event export"><b>Semilla 2027</b>partners CA + MX activos</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROYECCION CIERRE -->
+<section>
+  <div class="section-head"><h2>Composición proyectada — cierre 2026</h2><span class="badge">Escenario base · USD</span></div>
+  <div class="projection">
+    <div class="waterfall">
+      <div class="bar-col">
+        <div class="bar dom" style="height:200px">$1.8M</div>
+        <div class="bar-label">Doméstico AR<span class="v">~75%</span></div>
+      </div>
+      <div class="bar-col">
+        <div class="bar anka" style="height:42px">$218K</div>
+        <div class="bar-label">ANKA<span class="v">~9%</span></div>
+      </div>
+      <div class="bar-col">
+        <div class="bar holt" style="height:34px">$180K</div>
+        <div class="bar-label">HOLT<span class="v">~7%</span></div>
+      </div>
+      <div class="bar-col">
+        <div class="bar newp" style="height:16px">$75K</div>
+        <div class="bar-label">VANG+VIKS<span class="v">~3%</span></div>
+      </div>
+      <div class="bar-col">
+        <div class="bar uy" style="height:18px">$88K</div>
+        <div class="bar-label">Uruguay<span class="v">~4%</span></div>
+      </div>
+      <div class="bar-col">
+        <div class="bar co" style="height:8px">$35K</div>
+        <div class="bar-label">Colombia<span class="v">~1%</span></div>
+      </div>
+      <div class="bar-col">
+        <div class="bar mx" style="height:6px">TBD</div>
+        <div class="bar-label">MX + CA<span class="v">buffer al gap</span></div>
+      </div>
+      <div class="bar-col">
+        <div class="bar total" style="height:230px">~$2.4M</div>
+        <div class="bar-label">TOTAL<span class="v">~$250–300M ARS/mes</span></div>
+      </div>
+    </div>
+    <div class="ann">
+      <b>Lectura:</b> El escenario base ya cubre con margen el rango actual ($200–280M ARS/mes) y se acerca al target $350M, pero <b>no lo supera consistentemente</b> sin: (a) tracción real de VANG/VIKS post-junio, (b) cierre exitoso en México o Centroamérica con ventas H2, y (c) sostenimiento del momentum farma + Llama Figueroa. ANKA y HOLT ya son apuestas con tracción demostrada — el riesgo restante está concentrado en exportación nueva y en los lanzamientos sin historia.
+    </div>
+  </div>
+</section>
+
+<!-- EQUIPO + SOCIO -->
+<section>
+  <div class="section-head"><h2>Quiénes ejecutan</h2><span class="badge">Equipo + socio técnico</span></div>
+  <div class="team">
+    <div class="team-member fa">
+      <div class="name">Facundo Oroza</div>
+      <div class="role">Top vendedor · exclusividad multi-vertical</div>
+      <div class="verts">Farma · Logística · Industria · "dueño" de ANKA · viaja a MX con Nacho si se confirma evento</div>
+    </div>
+    <div class="team-member fe">
+      <div class="name">Federico Caffarelli</div>
+      <div class="role">Estaciones de servicio (95%)</div>
+      <div class="verts">Vertical demandante. Recibe operatoria Equipetrol después que Nacho abre puerta. Mejor debut histórico del equipo.</div>
+    </div>
+    <div class="team-member lu">
+      <div class="name">Lucas Luna</div>
+      <div class="role">Mix amplio · motor lanzamientos H2</div>
+      <div class="verts">Deportivo · oficinas · universidades · industria · apoyo en estaciones. VANG + VIKS son básicamente "suyas" por territorialidad.</div>
+    </div>
+    <div class="team-member in">
+      <div class="name">INX2 / Nacho</div>
+      <div class="role">Cuentas históricas · "abridor de puertas"</div>
+      <div class="verts">Cartera propia. Abre puertas internacionales (Arpec hecho, Equipetrol abre, MX/CA en curso). Lidera estrategia.</div>
+    </div>
+  </div>
+  <div class="partner-row">
+    <div class="partner-cell">
+      <strong>Hernán · Socio 50/50</strong>
+      <small>Perfil técnico: producción + abastecimiento (importaciones desde China) + RRHH. Es la cara natural del catálogo importado. <b>Viaja con Nacho a Hong Kong + Guangzhou + Shenzhen</b> en octubre porque son sus proveedores.</small>
+    </div>
+    <div class="partner-cell">
+      <strong>Revista Surtidores · Inteligencia comercial</strong>
+      <small>Suscripción AR + LATAM. Fuente clave de contactos calificados para identificar potenciales partners distribuidores en otros países (canal natural Arpec/Equipetrol-like). Además organiza el evento Centroamérica.</small>
+    </div>
+  </div>
+  <div class="legend">
+    <span><span class="dot" style="background:#2563eb"></span>Facundo</span>
+    <span><span class="dot" style="background:#10b981"></span>Federico</span>
+    <span><span class="dot" style="background:#f59e0b"></span>Lucas</span>
+    <span><span class="dot" style="background:#8b5cf6"></span>INX2/Nacho</span>
+  </div>
+</section>
+
+</div>
+</body>
+</html>

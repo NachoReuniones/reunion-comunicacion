@@ -1,0 +1,21 @@
+{
+  "equipo_mensual_usd": 160000,
+  "vendedores": {
+    "facundo_oroza": {
+      "mensual_usd": 62000,
+      "comentario": "Farma + Logística + Industria + ANKA. Llama Figueroa motor del año."
+    },
+    "federico_caffarelli": {
+      "mensual_usd": 76000,
+      "comentario": "Estaciones de servicio. Sube cuando arranque Equipetrol Colombia."
+    },
+    "lucas_luna": {
+      "mensual_usd": 22000,
+      "comentario": "Mix amplio. Sube con VANG + VIKS (jun) y crecimiento universidades."
+    },
+    "inx2_nacho": {
+      "mensual_usd": 20000,
+      "comentario": "Cuentas históricas + cartera dueño."
+    }
+  }
+}

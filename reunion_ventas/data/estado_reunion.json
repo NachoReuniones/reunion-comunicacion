@@ -1,0 +1,154 @@
+{
+  "reunion_facundo_oroza": {
+    "checklist": [
+      {
+        "text": "Terminar con los exabruptos con el equipo.  Cada vez que tenés un exabrupto, a mí me resulta un trabajo extra tener que defenderte o explicar el estado en que estás.",
+        "done": false
+      },
+      {
+        "text": "Por favor dar contexto en los pedidos al resto de las areaas para que entiendan por que tienen que hacer algo fuera del circuito.  Ej. Pedido para Andreani sin NP",
+        "done": false
+      },
+      {
+        "text": "Como asegurarse de que todas las farmacias esten siendo atacadas, y que no esten quedando farmacias sin llamar en el camino",
+        "done": false
+      },
+      {
+        "text": "Avisarle a la IA que nuestros clientes no son distribuidores.  Las caidas de ventas tienen que ver con obras.",
+        "done": false
+      },
+      {
+        "text": "Horacio Garcia le esta comprando Aure a Index, Hernan Flocco.  Vos o Fede?",
+        "done": false
+      },
+      {
+        "text": "Como aumentar la prospeccion.  Aumentar la facturacion",
+        "done": false
+      },
+      {
+        "text": "Ver entrega de Loen",
+        "done": true
+      },
+      {
+        "text": "Ver entrega de Loen",
+        "done": true
+      }
+    ],
+    "notas": "",
+    "proximos": "<br>"
+  },
+  "reunion_equipo": {
+    "checklist": [
+      {
+        "text": "Presentacion del nuevo Dashboard de ventas",
+        "done": true
+      },
+      {
+        "text": "Premio mes pasado.  Cual era el objetivo y a cuanto llegamos.",
+        "done": false
+      },
+      {
+        "text": "Ofrecer Bodo para Fachadas Farmacia. Estacionamientos EESS. Alrededores Industrias logisticas.   No esperar a que nos pidan.  Idem emergencias. (Capacitar sobre linea de emergencia)",
+        "done": false
+      },
+      {
+        "text": "Revisar cuantas emergencias se venden por mes.  Pedirselo a Claude",
+        "done": false
+      },
+      {
+        "text": "Hacer un listado de luminarias que ya fueron probadas con Emergencias",
+        "done": false
+      },
+      {
+        "text": "Venta a cadenas de supermercados con Holt. Ver seguimiento",
+        "done": false
+      },
+      {
+        "text": "Como promocionar venta de Bodo para canchas de Futbol 5 y 7. Hacer una cancha a costo y usarla para promocionar.  Idem VANG.",
+        "done": false
+      },
+      {
+        "text": "Cuidado del Funnel. Gri. Como viene?",
+        "done": false
+      },
+      {
+        "text": " Entender que negocio se hace en Vaca Muerta y en Catamarca Litio",
+        "done": false
+      },
+      {
+        "text": "Agregar proyectado de cada vendedor en base a las NPM",
+        "done": false
+      },
+      {
+        "text": "Delegacion de tareas a Produccion, Administracion, Servicio tecnico.  El vendedor no puede ocupar tiempo en esto",
+        "done": false
+      },
+      {
+        "text": "Incorporar cotizaciones al Dashboard de ventas.",
+        "done": false
+      },
+      {
+        "text": "Premio mes pasado. Cual era el objetivo y a cuanto llegamos.",
+        "done": false
+      }
+    ],
+    "notas": "<br>",
+    "proximos": "Hacer un listado de luminarias que ya fueron probadas con Emergencias.<div><b>17-06-26&nbsp;</b></div><div>Pedido a Jonny</div>"
+  },
+  "reunion_federico_caffarelli": {
+    "checklist": [
+      {
+        "text": "Seguimiento a Raizen por Aure para sus estaciones.  39 estaciones",
+        "done": false
+      },
+      {
+        "text": "Organizacion general del dia.  Cuando prospectar.  Cuando responder, etc..",
+        "done": false
+      },
+      {
+        "text": "Delegacion de tus tareas durante tus vacaciones",
+        "done": false
+      },
+      {
+        "text": "En el top 10 de familias.  Agregar la cantidad de clientes que compraron",
+        "done": false
+      },
+      {
+        "text": "analizar la venta a la Cámara de Estacioneros de Mendoza",
+        "done": false
+      }
+    ],
+    "notas": "Reunion con Lucas sobre relevamiento a Federico<div><ul><li>No prospecta.</li><li>Mira Wap instantaneamente.&nbsp; No importa si esta trabajando en una cotizacion.</li><li>Deja muchas tareas inconclusas y las va llenando a medida que puede.</li><li>Tiene una carga de tareas importante.</li></ul></div>",
+    "proximos": ""
+  },
+  "reunion_lucas_luna": {
+    "checklist": [
+      {
+        "text": "Entender bien lo que se cotiza en un Shop.  Porque Emi pide que la info este mas cocinada.  ",
+        "done": true
+      },
+      {
+        "text": "Actualizacion sobre el Holt para telares.  Si va bien, como manejamos la entrega",
+        "done": false
+      },
+      {
+        "text": "Como hacemos para hacer crecer tu venta",
+        "done": true
+      },
+      {
+        "text": "Prospeccion por Linkedin",
+        "done": false
+      },
+      {
+        "text": "Indagar a ver que otro negocio o area se puede iluminar al mismo cliente",
+        "done": false
+      },
+      {
+        "text": "ver tema de 1.000 ancas",
+        "done": false
+      }
+    ],
+    "notas": "",
+    "proximos": "Prospectar <b>de 8 a 10hs </b>y despues completar las tareas pendientes<div>Visitar <b>La Cantabrica</b> Parque intustrial para ver como quedo lo que iluminamos y usarlo de referencia para vender dentro del parque.</div><div>Ver si las <b>canchas</b> cotizadas se puede mirar el precio con VANG.</div><div>Salir con <b>Vang con 40%</b> de descuento.</div><div>Pedir a Facu <b>listado de canchas</b></div><div>Indagar a ver que otro negocio o area se puede iluminar al mismo cliente</div><div><br></div><div><br></div>"
+  }
+}
