@@ -1,0 +1,17 @@
+# Project specific
+.env
+.env.local
+__pycache__/
+*.pyc
+*.pyo
+node_modules/
+.DS_Store
+
+# Claude Code
+.claude/settings.local.json
+
+# Build outputs
+*.pdf
+*.xlsx
+*.csv
+temp/
