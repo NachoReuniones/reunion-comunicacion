@@ -705,64 +705,65 @@
 
         // === Drag & Drop Targets ===
         function setupDragTargets() {
-            // Dragover global
+            // Permitir drop en toda la página
             document.addEventListener('dragover', (e) => {
                 e.preventDefault();
-                e.dataTransfer.dropEffect = 'move';
             });
 
-            // Drop global - detecta si se suelta dentro de conversados o charlar
-            document.addEventListener('drop', (e) => {
+            // Drop sobre CONVERSADOS
+            temasConversadosEl.addEventListener('dragenter', () => {
+                temasConversadosEl.classList.add('drag-over');
+            });
+
+            temasConversadosEl.addEventListener('dragleave', (e) => {
+                if (e.target === temasConversadosEl) {
+                    temasConversadosEl.classList.remove('drag-over');
+                }
+            });
+
+            temasConversadosEl.addEventListener('drop', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-
                 temasConversadosEl.classList.remove('drag-over');
-                temasACharlarEl.classList.remove('drag-over');
 
                 const temaId = state.draggedTemaId;
-                if (!temaId) {
-                    state.draggedTemaId = null;
-                    return;
-                }
-
-                // Detectar en qué contenedor se soltó usando getBoundingClientRect
-                const conversadosRect = temasConversadosEl.getBoundingClientRect();
-                const charlarRect = temasACharlarEl.getBoundingClientRect();
-
-                const dropX = e.clientX;
-                const dropY = e.clientY;
-
-                // Verificar si está dentro de conversados o charlar
-                const isInConversados =
-                    (dropX >= conversadosRect.left && dropX <= conversadosRect.right &&
-                     dropY >= conversadosRect.top && dropY <= conversadosRect.bottom);
-
-                const tema = state.temas.find(t => t.id === temaId);
-                if (tema) {
-                    tema.conversado = isInConversados;
-                    guardarDatos();
-                    renderTemas();
+                if (temaId) {
+                    const tema = state.temas.find(t => t.id === temaId);
+                    if (tema) {
+                        tema.conversado = true;
+                        guardarDatos();
+                        renderTemas();
+                    }
                 }
                 state.draggedTemaId = null;
             });
 
-            // Visual feedback en dragover
-            temasConversadosEl.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                temasConversadosEl.classList.add('drag-over');
-            });
-
-            temasConversadosEl.addEventListener('dragleave', () => {
-                temasConversadosEl.classList.remove('drag-over');
-            });
-
-            temasACharlarEl.addEventListener('dragover', (e) => {
-                e.preventDefault();
+            // Drop sobre A CHARLAR
+            temasACharlarEl.addEventListener('dragenter', () => {
                 temasACharlarEl.classList.add('drag-over');
             });
 
-            temasACharlarEl.addEventListener('dragleave', () => {
+            temasACharlarEl.addEventListener('dragleave', (e) => {
+                if (e.target === temasACharlarEl) {
+                    temasACharlarEl.classList.remove('drag-over');
+                }
+            });
+
+            temasACharlarEl.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 temasACharlarEl.classList.remove('drag-over');
+
+                const temaId = state.draggedTemaId;
+                if (temaId) {
+                    const tema = state.temas.find(t => t.id === temaId);
+                    if (tema) {
+                        tema.conversado = false;
+                        guardarDatos();
+                        renderTemas();
+                    }
+                }
+                state.draggedTemaId = null;
             });
         }
 
