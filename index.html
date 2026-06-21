@@ -727,13 +727,16 @@
                 temasConversadosEl.classList.remove('drag-over');
 
                 const temaId = state.draggedTemaId;
+                console.log('DROP en conversados. temaId:', temaId);
                 if (!temaId) return;
 
                 const tema = state.temas.find(t => t.id === temaId);
+                console.log('Tema encontrado:', tema ? tema.texto : 'NO');
                 if (tema) {
                     tema.conversado = true;
                     guardarDatos();
                     renderTemas();
+                    console.log('✅ Tema marcado como conversado');
                 }
                 state.draggedTemaId = null;
             });
