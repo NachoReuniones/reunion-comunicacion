@@ -725,9 +725,17 @@
                     return;
                 }
 
-                // Verificar dónde se soltó
-                const isInConversados = temasConversadosEl.contains(e.target) ||
-                                       e.clientX > window.innerWidth / 2; // Heurística: derecha = conversados
+                // Detectar en qué contenedor se soltó usando getBoundingClientRect
+                const conversadosRect = temasConversadosEl.getBoundingClientRect();
+                const charlarRect = temasACharlarEl.getBoundingClientRect();
+
+                const dropX = e.clientX;
+                const dropY = e.clientY;
+
+                // Verificar si está dentro de conversados o charlar
+                const isInConversados =
+                    (dropX >= conversadosRect.left && dropX <= conversadosRect.right &&
+                     dropY >= conversadosRect.top && dropY <= conversadosRect.bottom);
 
                 const tema = state.temas.find(t => t.id === temaId);
                 if (tema) {
