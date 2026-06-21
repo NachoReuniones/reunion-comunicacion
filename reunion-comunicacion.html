@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Reuniones · Luctron</title>
+
+    <!-- Pre-paint del tema (evita flash en dark mode) -->
+    <script>
+    (function () {
+        try {
+            var t = localStorage.getItem('lumi-reunion.theme');
+            if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+    })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* === CSS Variables (LUMI Design System) === */
+        :root {
+            /* Paleta principal */
+            --c-dark:           #000000;
+            --c-midnight:       #0F0F0F;
+            --c-deep-blue:      #0C2136;
+            --c-misty-blue:     #3E688F;
+            --c-white:          #FFFFFF;
+            --c-light-gray:     #E8E8E8;
+            --c-medium-gray:    #B0B0B0;
+
+            /* Superficies (LIGHT) */
+            --bg:               #F2F2F2;
+            --surface:          #FFFFFF;
+            --surface-2:        #FAFAFA;
+            --surface-hover:    #F6F6F6;
+            --feature-bg:       var(--c-deep-blue);
+
+            --border:           #E4E4E4;
+            --border-soft:      #EDEDED;
+            --border-strong:    #D8D8D8;
+
+            --text:             #0F0F0F;
+            --text-2:           #2A2A2A;
+            --muted:            #6B6B6B;
+            --muted-2:          #9A9A9A;
+            --on-dark:          #FFFFFF;
+            --on-dark-muted:    #B7C3D1;
+
+            --accent:           var(--c-deep-blue);
+            --accent-2:         var(--c-misty-blue);
+            --accent-soft:      #ECF1F7;
+
+            /* Status */
+            --verde:            #2E7A4F;
+            --verde-bg:         #E8F4ED;
+            --verde-border:     #B8DCC4;
+
+            /* Tipografía */
+            --font: "Inter", ui-sans-serif, -apple-system, BlinkMacSystemFont,
+                    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+            /* Layout */
+            --radius:           14px;
+            --radius-sm:        10px;
+            --radius-xs:        6px;
+            --pill:             999px;
+        }
+
+        [data-theme="dark"] {
+            --bg:               #0A0A0A;
+            --surface:          #131313;
+            --surface-2:        #181818;
+            --surface-hover:    #1E1E1E;
+
+            --border:           #262626;
+            --border-soft:      #1F1F1F;
+            --border-strong:    #333333;
+
+            --text:             #F5F5F5;
+            --text-2:           #D6D6D6;
+            --muted:            #8B8B8B;
+            --muted-2:          #5F5F5F;
+
+            --accent:           var(--c-misty-blue);
+            --accent-2:         #5C8AB5;
+            --accent-soft:      #14233A;
+
+            --verde:            #62B689;
+            --verde-bg:         rgba(46, 122, 79, .16);
+        }
+
+        /* === Reset & Base === */
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; height: 100%; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            font-size: 13.5px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            letter-spacing: -0.005em;
+            transition: background-color .15s, color .15s;
+        }
+
+        /* === Layout Principal === */
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: 60px 1fr;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.2px;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .theme-toggle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--bg);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color .12s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--surface-hover);
+        }
+
+        .theme-toggle svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            color: var(--text);
+        }
+
+        .theme-toggle .icon-sun { display: none; }
+        .theme-toggle .icon-moon { display: block; }
+        [data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+        [data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+
+        /* === Main Content === */
+        .app-main {
+            padding: 24px 32px;
+            overflow-y: auto;
+        }
+
+        .layout-2col {
+            display: grid;
+            grid-template-columns: minmax(340px, 0.8fr) 1.2fr;
+            gap: 10px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1200px) {
+            .layout-2col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* === Card === */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            transition: border-color .12s;
+            display: flex;
+            flex-direction: column;
+            height: fit-content;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: -0.1px;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* === Temas List === */
+        .temas-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .temas-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-height: 200px;
+        }
+
+        .tema-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: var(--surface-2);
+            border: 1px solid var(--border-soft);
+            border-radius: var(--radius-sm);
+            cursor: grab;
+            transition: background-color .12s, border-color .12s;
+            user-select: none;
+        }
+
+        .tema-item:hover {
+            background: var(--surface-hover);
+            border-color: var(--border-strong);
+        }
+
+        .tema-item.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        .tema-item.drag-over {
+            background: var(--accent-soft);
+            border-color: var(--accent);
+        }
+
+        .tema-item.conversado {
+            opacity: 0.6;
+        }
+
+        .tema-item.conversado .tema-text {
+            text-decoration: line-through;
+            color: var(--muted);
+        }
+
+        .tema-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--verde);
+        }
+
+        .tema-text {
+            flex: 1;
+            font-size: 13px;
+            color: var(--text-2);
+            transition: all .12s;
+        }
+
+        .tema-remove {
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: var(--radius-xs);
+            transition: all .12s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tema-remove:hover {
+            background: var(--rojo-bg);
+            color: var(--rojo);
+        }
+
+        .rojo { --rojo: #B33B3A; --rojo-bg: #FDECEC; }
+
+        /* === Input Nuevo Tema === */
+        .nuevo-tema-input-wrapper {
+            display: flex;
+            gap: 8px;
+        }
+
+        input[type="text"], textarea {
+            padding: 9px 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-size: 13px;
+            font-family: inherit;
+            transition: border-color .12s, background .12s;
+        }
+
+        input[type="text"]::placeholder, textarea::placeholder {
+            color: var(--muted-2);
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            background: var(--surface);
+            border-color: var(--accent-2);
+        }
+
+        .input-container {
+            flex: 1;
+        }
+
+        /* === Botones === */
+        .btn {
+            border: none;
+            border-radius: var(--pill);
+            padding: 8px 16px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .12s;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--c-midnight);
+            color: var(--c-white);
+        }
+
+        .btn-primary:hover {
+            background: var(--c-dark);
+        }
+
+        [data-theme="dark"] .btn-primary {
+            background: var(--c-misty-blue);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--border-strong);
+            background: var(--surface-hover);
+        }
+
+        /* === Notas === */
+        .notas-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .notas-editor textarea {
+            width: 100%;
+            min-height: 200px;
+            resize: vertical;
+            padding: 12px;
+            font-size: 13px;
+        }
+
+        .editor-toolbar {
+            display: flex;
+            gap: 8px;
+            padding: 12px;
+            background: var(--surface-2);
+            border-radius: var(--radius-sm);
+            border-bottom: 1px solid var(--border-soft);
+            font-size: 11px;
+            color: var(--muted);
+            flex-wrap: wrap;
+        }
+
+        .editor-toolbar strong {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* === Fecha === */
+        .fecha-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-soft);
+        }
+
+        .fecha-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--muted);
+        }
+
+        input[type="date"] {
+            padding: 8px 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        /* === Empty State === */
+        .empty-state {
+            text-align: center;
+            padding: 24px 12px;
+            color: var(--muted-2);
+            font-size: 12px;
+        }
+
+        .empty-state svg {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 8px;
+            opacity: 0.4;
+        }
+
+        /* === Section Label === */
+        .section-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            color: var(--muted);
+            margin-top: 16px;
+            margin-bottom: 8px;
+            padding: 0 12px;
+        }
+
+        /* === Responsive === */
+        @media (max-width: 768px) {
+            .app-main {
+                padding: 16px;
+            }
+
+            .topbar {
+                padding: 0 16px;
+            }
+
+            .layout-2col {
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <span class="topbar-title">Reunión de Comunicación</span>
+            <div class="topbar-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="app-main">
+            <div class="layout-2col">
+                <!-- COLUMNA IZQUIERDA: TEMAS -->
+                <div class="temas-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Temas a charlar</span>
+                        </div>
+                        <div class="card-body">
+                            <div id="temasACharlar" class="temas-list"></div>
+                            <div class="empty-state" id="emptyStateCharlar" style="display: none;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path>
+                                </svg>
+                                Sin temas pendientes
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Agregar tema</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="nuevo-tema-input-wrapper">
+                                <input type="text" id="nuevoTemaInput" placeholder="Tema a discutir..." />
+                                <button class="btn btn-primary" id="agregarTemaBtn">+ Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-label">Temas conversados</div>
+                    <div id="temasConversados" class="temas-list" style="opacity: 0.6;"></div>
+                </div>
+
+                <!-- COLUMNA DERECHA: NOTAS -->
+                <div class="notas-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Notas de la reunión</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="editor-toolbar">
+                                <strong>Tips:</strong> Escribe libremente. Los cambios se guardan automáticamente.
+                            </div>
+                            <textarea id="notasTextarea" placeholder="Comentarios, observaciones, contexto..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Próximos pasos / compromisos</span>
+                        </div>
+                        <div class="card-body">
+                            <textarea id="proximosTextarea" placeholder="Acciones a tomar, responsables, fechas..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="fecha-section">
+                            <span class="fecha-label">Fecha de la reunión:</span>
+                            <input type="date" id="fechaReunion" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // === Estado Global ===
+        const state = {
+            temas: [],
+            notas: '',
+            proximos: '',
+            fecha: new Date().toISOString().split('T')[0]
+        };
+
+        // === Elementos DOM ===
+        const temasACharlarEl = document.getElementById('temasACharlar');
+        const temasConversadosEl = document.getElementById('temasConversados');
+        const emptyStateCharlarEl = document.getElementById('emptyStateCharlar');
+        const notasTextarea = document.getElementById('notasTextarea');
+        const proximosTextarea = document.getElementById('proximosTextarea');
+        const fechaInput = document.getElementById('fechaReunion');
+        const nuevoTemaInput = document.getElementById('nuevoTemaInput');
+        const agregarTemaBtn = document.getElementById('agregarTemaBtn');
+        const themeToggle = document.getElementById('themeToggle');
+
+        // === LocalStorage ===
+        const STORAGE_KEY = 'lumi-reunion-data';
+
+        function guardarDatos() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch (e) {
+                console.warn('No se pudo guardar en localStorage', e);
+            }
+        }
+
+        function cargarDatos() {
+            try {
+                const datos = localStorage.getItem(STORAGE_KEY);
+                if (datos) {
+                    const parsed = JSON.parse(datos);
+                    state.temas = parsed.temas || [];
+                    state.notas = parsed.notas || '';
+                    state.proximos = parsed.proximos || '';
+                    state.fecha = parsed.fecha || new Date().toISOString().split('T')[0];
+                }
+            } catch (e) {
+                console.warn('Error cargando datos', e);
+            }
+        }
+
+        // === Render ===
+        function renderTemas() {
+            temasACharlarEl.innerHTML = '';
+            temasConversadosEl.innerHTML = '';
+
+            const temasActivos = state.temas.filter(t => !t.conversado);
+            const temasCompletos = state.temas.filter(t => t.conversado);
+
+            if (temasActivos.length === 0) {
+                emptyStateCharlarEl.style.display = 'block';
+            } else {
+                emptyStateCharlarEl.style.display = 'none';
+            }
+
+            temasActivos.forEach((tema, idx) => {
+                const el = crearTemaElement(tema, idx, false);
+                temasACharlarEl.appendChild(el);
+            });
+
+            temasCompletos.forEach((tema, idx) => {
+                const el = crearTemaElement(tema, idx, true);
+                temasConversadosEl.appendChild(el);
+            });
+        }
+
+        function crearTemaElement(tema, idx, conversado) {
+            const div = document.createElement('div');
+            div.className = `tema-item ${tema.conversado ? 'conversado' : ''}`;
+            div.draggable = true;
+            div.dataset.id = tema.id;
+            div.dataset.idx = idx;
+
+            div.innerHTML = `
+                <input type="checkbox" class="tema-checkbox" ${tema.conversado ? 'checked' : ''} />
+                <span class="tema-text">${escapeHtml(tema.texto)}</span>
+                <button class="tema-remove" aria-label="Eliminar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            `;
+
+            // Checkbox
+            const checkbox = div.querySelector('.tema-checkbox');
+            checkbox.addEventListener('change', () => {
+                const temaObj = state.temas.find(t => t.id === tema.id);
+                if (temaObj) {
+                    temaObj.conversado = checkbox.checked;
+                    guardarDatos();
+                    renderTemas();
+                }
+            });
+
+            // Remove
+            const removeBtn = div.querySelector('.tema-remove');
+            removeBtn.addEventListener('click', () => {
+                state.temas = state.temas.filter(t => t.id !== tema.id);
+                guardarDatos();
+                renderTemas();
+            });
+
+            // Drag events
+            div.addEventListener('dragstart', (e) => {
+                div.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('temaId', tema.id);
+            });
+
+            div.addEventListener('dragend', () => {
+                div.classList.remove('dragging');
+                temasACharlarEl.querySelectorAll('.tema-item').forEach(el => el.classList.remove('drag-over'));
+                temasConversadosEl.querySelectorAll('.tema-item').forEach(el => el.classList.remove('drag-over'));
+            });
+
+            return div;
+        }
+
+        // === Drag & Drop Targets ===
+        function setupDragTargets() {
+            [temasACharlarEl, temasConversadosEl].forEach(target => {
+                target.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    target.querySelectorAll('.tema-item:not(.dragging)').forEach(el => {
+                        el.classList.add('drag-over');
+                    });
+                });
+
+                target.addEventListener('dragleave', (e) => {
+                    if (e.target === target) {
+                        target.querySelectorAll('.tema-item').forEach(el => {
+                            el.classList.remove('drag-over');
+                        });
+                    }
+                });
+
+                target.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    target.querySelectorAll('.tema-item').forEach(el => el.classList.remove('drag-over'));
+
+                    const temaId = e.dataTransfer.getData('temaId');
+                    const tema = state.temas.find(t => t.id === temaId);
+
+                    if (tema) {
+                        // Si se dropea en conversados, marcar como conversado
+                        if (target === temasConversadosEl) {
+                            tema.conversado = true;
+                        } else {
+                            // Si se dropea en activos, marcar como no conversado
+                            tema.conversado = false;
+                        }
+                        guardarDatos();
+                        renderTemas();
+                    }
+                });
+            });
+        }
+
+        // === Agregar Tema ===
+        function agregarTema() {
+            const texto = nuevoTemaInput.value.trim();
+            if (!texto) return;
+
+            state.temas.push({
+                id: Date.now() + Math.random(),
+                texto,
+                conversado: false
+            });
+
+            nuevoTemaInput.value = '';
+            nuevoTemaInput.focus();
+            guardarDatos();
+            renderTemas();
+        }
+
+        agregarTemaBtn.addEventListener('click', agregarTema);
+        nuevoTemaInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') agregarTema();
+        });
+
+        // === Notas Auto-save ===
+        notasTextarea.addEventListener('input', () => {
+            state.notas = notasTextarea.value;
+            guardarDatos();
+        });
+
+        proximosTextarea.addEventListener('input', () => {
+            state.proximos = proximosTextarea.value;
+            guardarDatos();
+        });
+
+        fechaInput.addEventListener('change', () => {
+            state.fecha = fechaInput.value;
+            guardarDatos();
+        });
+
+        // === Theme Toggle ===
+        themeToggle.addEventListener('click', () => {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme') || 'light';
+            const next = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            try {
+                localStorage.setItem('lumi-reunion.theme', next);
+            } catch (e) {}
+        });
+
+        // === Utilidades ===
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // === Init ===
+        cargarDatos();
+        notasTextarea.value = state.notas;
+        proximosTextarea.value = state.proximos;
+        fechaInput.value = state.fecha;
+        renderTemas();
+        setupDragTargets();
+        nuevoTemaInput.focus();
+    </script>
+</body>
+</html>
