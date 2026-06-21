@@ -686,13 +686,23 @@
                 renderTemas();
             });
 
-            // Drag events
+            // Drag START - guardar ID en dataTransfer
             div.addEventListener('dragstart', (e) => {
                 div.classList.add('dragging');
-                e.dataTransfer.effectAllowed = 'move';
-                e.dataTransfer.setData('application/tema-id', String(tema.id));
+                e.dataTransfer.effectAllowed = 'copyMove';
+                e.dataTransfer.setData('text/plain', tema.texto);
+                e.dataTransfer.setData('tema-id', String(tema.id));
+                setTimeout(() => div.classList.add('dragging'), 0);
             });
 
+            // Drag OVER - para que sea dropeable
+            div.addEventListener('dragover', (e) => {
+                if (!e.dataTransfer.types.includes('tema-id')) return;
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+            });
+
+            // Drag END
             div.addEventListener('dragend', () => {
                 div.classList.remove('dragging');
                 temasACharlarEl.querySelectorAll('.tema-item').forEach(el => el.classList.remove('drag-over'));
