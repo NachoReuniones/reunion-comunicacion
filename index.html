@@ -705,47 +705,64 @@
 
         // === Drag & Drop Targets ===
         function setupDragTargets() {
-            [temasACharlarEl, temasConversadosEl].forEach(target => {
-                target.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    e.dataTransfer.dropEffect = 'move';
-                    target.querySelectorAll('.tema-item:not(.dragging)').forEach(el => {
-                        el.classList.add('drag-over');
-                    });
-                });
+            // Dragover en la página completa
+            document.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+            });
 
-                target.addEventListener('dragleave', (e) => {
-                    if (e.target === target) {
-                        target.querySelectorAll('.tema-item').forEach(el => {
-                            el.classList.remove('drag-over');
-                        });
-                    }
-                });
+            // Drop en conversados
+            temasConversadosEl.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                temasConversadosEl.classList.add('drag-over');
+            });
 
-                target.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    target.querySelectorAll('.tema-item').forEach(el => el.classList.remove('drag-over'));
+            temasConversadosEl.addEventListener('dragleave', () => {
+                temasConversadosEl.classList.remove('drag-over');
+            });
 
-                    const temaId = state.draggedTemaId;
-                    if (!temaId) return;
+            temasConversadosEl.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                temasConversadosEl.classList.remove('drag-over');
 
-                    const tema = state.temas.find(t => t.id === temaId);
+                const temaId = state.draggedTemaId;
+                if (!temaId) return;
 
-                    if (tema) {
-                        // Si se dropea en conversados, marcar como conversado
-                        if (target === temasConversadosEl) {
-                            tema.conversado = true;
-                        } else {
-                            // Si se dropea en activos, marcar como no conversado
-                            tema.conversado = false;
-                        }
-                        guardarDatos();
-                        renderTemas();
-                    }
+                const tema = state.temas.find(t => t.id === temaId);
+                if (tema) {
+                    tema.conversado = true;
+                    guardarDatos();
+                    renderTemas();
+                }
+                state.draggedTemaId = null;
+            });
 
-                    state.draggedTemaId = null;
-                });
+            // Drop en temas a charlar
+            temasACharlarEl.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                temasACharlarEl.classList.add('drag-over');
+            });
+
+            temasACharlarEl.addEventListener('dragleave', () => {
+                temasACharlarEl.classList.remove('drag-over');
+            });
+
+            temasACharlarEl.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                temasACharlarEl.classList.remove('drag-over');
+
+                const temaId = state.draggedTemaId;
+                if (!temaId) return;
+
+                const tema = state.temas.find(t => t.id === temaId);
+                if (tema) {
+                    tema.conversado = false;
+                    guardarDatos();
+                    renderTemas();
+                }
+                state.draggedTemaId = null;
             });
         }
 
