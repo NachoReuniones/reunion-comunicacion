@@ -723,12 +723,21 @@
 
                 target.addEventListener('drop', (e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     target.querySelectorAll('.tema-item').forEach(el => el.classList.remove('drag-over'));
 
-                    const temaId = parseFloat(e.dataTransfer.getData('temaId'));
-                    const tema = state.temas.find(t => t.id === temaId);
+                    const rawId = e.dataTransfer.getData('temaId');
+                    const temaId = parseFloat(rawId);
+
+                    console.log('Drop event:', { rawId, temaId, temasCount: state.temas.length });
+
+                    const tema = state.temas.find(t => {
+                        console.log('Comparing:', { tId: t.id, typeof: typeof t.id, searchId: temaId, equal: t.id === temaId });
+                        return t.id === temaId;
+                    });
 
                     if (tema) {
+                        console.log('Tema encontrado:', tema.texto);
                         // Si se dropea en conversados, marcar como conversado
                         if (target === temasConversadosEl) {
                             tema.conversado = true;
@@ -738,6 +747,8 @@
                         }
                         guardarDatos();
                         renderTemas();
+                    } else {
+                        console.log('Tema NO encontrado');
                     }
                 });
             });
