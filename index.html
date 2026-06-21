@@ -705,13 +705,40 @@
 
         // === Drag & Drop Targets ===
         function setupDragTargets() {
-            // Dragover en la página completa
+            // Dragover global
             document.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'move';
             });
 
-            // Drop en conversados
+            // Drop global - detecta si se suelta dentro de conversados o charlar
+            document.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                temasConversadosEl.classList.remove('drag-over');
+                temasACharlarEl.classList.remove('drag-over');
+
+                const temaId = state.draggedTemaId;
+                if (!temaId) {
+                    state.draggedTemaId = null;
+                    return;
+                }
+
+                // Verificar dónde se soltó
+                const isInConversados = temasConversadosEl.contains(e.target) ||
+                                       e.clientX > window.innerWidth / 2; // Heurística: derecha = conversados
+
+                const tema = state.temas.find(t => t.id === temaId);
+                if (tema) {
+                    tema.conversado = isInConversados;
+                    guardarDatos();
+                    renderTemas();
+                }
+                state.draggedTemaId = null;
+            });
+
+            // Visual feedback en dragover
             temasConversadosEl.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 temasConversadosEl.classList.add('drag-over');
@@ -721,27 +748,6 @@
                 temasConversadosEl.classList.remove('drag-over');
             });
 
-            temasConversadosEl.addEventListener('drop', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                temasConversadosEl.classList.remove('drag-over');
-
-                const temaId = state.draggedTemaId;
-                console.log('DROP en conversados. temaId:', temaId);
-                if (!temaId) return;
-
-                const tema = state.temas.find(t => t.id === temaId);
-                console.log('Tema encontrado:', tema ? tema.texto : 'NO');
-                if (tema) {
-                    tema.conversado = true;
-                    guardarDatos();
-                    renderTemas();
-                    console.log('✅ Tema marcado como conversado');
-                }
-                state.draggedTemaId = null;
-            });
-
-            // Drop en temas a charlar
             temasACharlarEl.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 temasACharlarEl.classList.add('drag-over');
@@ -749,23 +755,6 @@
 
             temasACharlarEl.addEventListener('dragleave', () => {
                 temasACharlarEl.classList.remove('drag-over');
-            });
-
-            temasACharlarEl.addEventListener('drop', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                temasACharlarEl.classList.remove('drag-over');
-
-                const temaId = state.draggedTemaId;
-                if (!temaId) return;
-
-                const tema = state.temas.find(t => t.id === temaId);
-                if (tema) {
-                    tema.conversado = false;
-                    guardarDatos();
-                    renderTemas();
-                }
-                state.draggedTemaId = null;
             });
         }
 
