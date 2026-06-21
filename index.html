@@ -584,8 +584,7 @@
             temas: [],
             notas: '',
             proximos: '',
-            fecha: new Date().toISOString().split('T')[0],
-            draggedTemaId: null
+            fecha: new Date().toISOString().split('T')[0]
         };
 
         // === Elementos DOM ===
@@ -691,7 +690,7 @@
             div.addEventListener('dragstart', (e) => {
                 div.classList.add('dragging');
                 e.dataTransfer.effectAllowed = 'move';
-                state.draggedTemaId = tema.id;
+                e.dataTransfer.setData('application/tema-id', String(tema.id));
             });
 
             div.addEventListener('dragend', () => {
@@ -705,20 +704,20 @@
 
         // === Drag & Drop Targets ===
         function setupDragTargets() {
-            // Permitir drop en toda la página
+            // Permitir dragover en toda la página
             document.addEventListener('dragover', (e) => {
                 e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
             });
 
             // Drop sobre CONVERSADOS
-            temasConversadosEl.addEventListener('dragenter', () => {
+            temasConversadosEl.addEventListener('dragover', (e) => {
+                e.preventDefault();
                 temasConversadosEl.classList.add('drag-over');
             });
 
-            temasConversadosEl.addEventListener('dragleave', (e) => {
-                if (e.target === temasConversadosEl) {
-                    temasConversadosEl.classList.remove('drag-over');
-                }
+            temasConversadosEl.addEventListener('dragleave', () => {
+                temasConversadosEl.classList.remove('drag-over');
             });
 
             temasConversadosEl.addEventListener('drop', (e) => {
@@ -726,27 +725,27 @@
                 e.stopPropagation();
                 temasConversadosEl.classList.remove('drag-over');
 
-                const temaId = state.draggedTemaId;
-                if (temaId) {
-                    const tema = state.temas.find(t => t.id === temaId);
-                    if (tema) {
-                        tema.conversado = true;
-                        guardarDatos();
-                        renderTemas();
-                    }
+                const temaIdStr = e.dataTransfer.getData('application/tema-id');
+                if (!temaIdStr) return;
+
+                const temaId = parseFloat(temaIdStr);
+                const tema = state.temas.find(t => t.id === temaId);
+
+                if (tema) {
+                    tema.conversado = true;
+                    guardarDatos();
+                    renderTemas();
                 }
-                state.draggedTemaId = null;
             });
 
             // Drop sobre A CHARLAR
-            temasACharlarEl.addEventListener('dragenter', () => {
+            temasACharlarEl.addEventListener('dragover', (e) => {
+                e.preventDefault();
                 temasACharlarEl.classList.add('drag-over');
             });
 
-            temasACharlarEl.addEventListener('dragleave', (e) => {
-                if (e.target === temasACharlarEl) {
-                    temasACharlarEl.classList.remove('drag-over');
-                }
+            temasACharlarEl.addEventListener('dragleave', () => {
+                temasACharlarEl.classList.remove('drag-over');
             });
 
             temasACharlarEl.addEventListener('drop', (e) => {
@@ -754,16 +753,17 @@
                 e.stopPropagation();
                 temasACharlarEl.classList.remove('drag-over');
 
-                const temaId = state.draggedTemaId;
-                if (temaId) {
-                    const tema = state.temas.find(t => t.id === temaId);
-                    if (tema) {
-                        tema.conversado = false;
-                        guardarDatos();
-                        renderTemas();
-                    }
+                const temaIdStr = e.dataTransfer.getData('application/tema-id');
+                if (!temaIdStr) return;
+
+                const temaId = parseFloat(temaIdStr);
+                const tema = state.temas.find(t => t.id === temaId);
+
+                if (tema) {
+                    tema.conversado = false;
+                    guardarDatos();
+                    renderTemas();
                 }
-                state.draggedTemaId = null;
             });
         }
 
