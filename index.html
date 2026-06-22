@@ -293,6 +293,14 @@
             border-radius: var(--radius-sm);
         }
 
+        /* Campo de texto resaltado al arrastrar un tema encima */
+        textarea.campo-drop-active {
+            outline: 2px dashed var(--accent-2);
+            outline-offset: 2px;
+            background: var(--surface) !important;
+            border-color: var(--accent-2) !important;
+        }
+
         body.dragging-active {
             cursor: grabbing;
             user-select: none;
@@ -788,6 +796,42 @@
             return { idx: items.length, beforeEl: null };
         }
 
+        // Campos de texto donde se puede soltar un tema para copiar su texto
+        const CAMPOS_DESTINO = ['notasTextarea', 'proximosTextarea'];
+
+        function campoBajoCursor(e) {
+            drag.clone.style.display = 'none';
+            const el = document.elementFromPoint(e.clientX, e.clientY);
+            drag.clone.style.display = '';
+            if (el) {
+                const ta = el.closest('#notasTextarea, #proximosTextarea');
+                if (ta) return ta;
+            }
+            // Fallback por rectángulo
+            for (const id of CAMPOS_DESTINO) {
+                const t = document.getElementById(id);
+                if (!t) continue;
+                const r = t.getBoundingClientRect();
+                if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) return t;
+            }
+            return null;
+        }
+
+        function limpiarResaltadoCampos() {
+            CAMPOS_DESTINO.forEach(id => {
+                const t = document.getElementById(id);
+                if (t) t.classList.remove('campo-drop-active');
+            });
+        }
+
+        function insertarTemaEnCampo(textarea, texto) {
+            const actual = textarea.value;
+            const sep = (actual && !actual.endsWith('\n')) ? '\n' : '';
+            textarea.value = actual + sep + '• ' + texto;
+            // Dispara el auto-guardado (los listeners de input ya sincronizan el estado)
+            textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
         document.addEventListener('pointermove', (e) => {
             if (!drag) return;
 
@@ -801,7 +845,17 @@
 
             temasACharlarEl.classList.remove('list-drop-active');
             temasConversadosEl.classList.remove('list-drop-active');
+            limpiarResaltadoCampos();
 
+            // Prioridad 1: ¿está sobre un campo de texto (Notas / Próximos pasos)?
+            const campo = campoBajoCursor(e);
+            if (campo) {
+                if (drag.placeholder.parentNode) drag.placeholder.remove();
+                campo.classList.add('campo-drop-active');
+                return;
+            }
+
+            // Prioridad 2: ¿está sobre una de las listas?
             const lista = listaBajoCursor(e);
             if (!lista) {
                 if (drag.placeholder.parentNode) drag.placeholder.remove();
@@ -817,15 +871,23 @@
             if (!drag) return;
 
             if (drag.started) {
-                const lista = listaBajoCursor(e);
-                if (lista) {
-                    const aConversados = (lista === temasConversadosEl);
-                    const { idx } = indiceDestino(lista, e.clientY);
-                    moverTema(drag.tema, aConversados, idx);
+                // Prioridad 1: soltar sobre un campo de texto → copiar el texto del tema
+                const campo = campoBajoCursor(e);
+                if (campo) {
+                    insertarTemaEnCampo(campo, drag.tema.texto);
+                    finalizarArrastre();
+                } else {
+                    // Prioridad 2: soltar sobre una lista → reordenar / mover a conversados
+                    const lista = listaBajoCursor(e);
+                    if (lista) {
+                        const aConversados = (lista === temasConversadosEl);
+                        const { idx } = indiceDestino(lista, e.clientY);
+                        moverTema(drag.tema, aConversados, idx);
+                    }
+                    finalizarArrastre();
+                    guardarDatos();
+                    renderTemas();
                 }
-                finalizarArrastre();
-                guardarDatos();
-                renderTemas();
             } else {
                 finalizarArrastre();
             }
@@ -879,6 +941,7 @@
             document.body.classList.remove('dragging-active');
             temasACharlarEl.classList.remove('list-drop-active');
             temasConversadosEl.classList.remove('list-drop-active');
+            limpiarResaltadoCampos();
             if (drag.clone) drag.clone.remove();
             if (drag.placeholder && drag.placeholder.parentNode) drag.placeholder.remove();
             if (drag.itemEl) drag.itemEl.classList.remove('drag-source');
