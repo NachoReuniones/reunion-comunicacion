@@ -252,6 +252,8 @@
             cursor: grab;
             transition: background-color .12s, border-color .12s;
             user-select: none;
+            -webkit-user-drag: none;
+            touch-action: none;
         }
 
         .tema-item:hover {
@@ -259,14 +261,41 @@
             border-color: var(--border-strong);
         }
 
-        .tema-item.dragging {
-            opacity: 0.5;
-            cursor: grabbing;
+        /* Item original mientras se arrastra su clon */
+        .tema-item.drag-source {
+            opacity: 0.35;
         }
 
-        .tema-item.drag-over {
-            background: var(--accent-soft);
-            border-color: var(--accent);
+        /* Clon flotante que sigue al cursor */
+        .drag-clone {
+            position: fixed;
+            z-index: 1000;
+            pointer-events: none;
+            margin: 0;
+            cursor: grabbing;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+            background: var(--surface);
+        }
+
+        /* Línea indicadora de dónde se va a soltar */
+        .drag-placeholder {
+            height: 2px;
+            background: var(--accent-2);
+            border-radius: 2px;
+            margin: 1px 0;
+            flex-shrink: 0;
+        }
+
+        /* Lista resaltada como zona de drop activa */
+        .temas-list.list-drop-active {
+            outline: 2px dashed var(--accent-2);
+            outline-offset: 4px;
+            border-radius: var(--radius-sm);
+        }
+
+        body.dragging-active {
+            cursor: grabbing;
+            user-select: none;
         }
 
         .tema-item.conversado {
@@ -625,6 +654,41 @@
         }
 
         // === Render ===
+        function crearTemaItem(tema) {
+            const li = document.createElement('div');
+            li.className = 'tema-item' + (tema.conversado ? ' conversado' : '');
+            li.dataset.id = tema.id;
+            li.innerHTML = `
+                <input type="checkbox" class="tema-checkbox" ${tema.conversado ? 'checked' : ''} />
+                <span class="tema-text">${escapeHtml(tema.texto)}</span>
+                <button class="tema-remove" aria-label="Eliminar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            `;
+
+            // Checkbox: mover entre listas
+            li.querySelector('.tema-checkbox').addEventListener('change', (e) => {
+                tema.conversado = e.target.checked;
+                guardarDatos();
+                renderTemas();
+            });
+
+            // Eliminar
+            li.querySelector('.tema-remove').addEventListener('click', () => {
+                state.temas = state.temas.filter(t => t.id !== tema.id);
+                guardarDatos();
+                renderTemas();
+            });
+
+            // Iniciar arrastre con pointer events
+            li.addEventListener('pointerdown', (e) => iniciarArrastre(e, tema, li));
+
+            return li;
+        }
+
         function renderTemas() {
             temasACharlarEl.innerHTML = '';
             temasConversadosEl.innerHTML = '';
@@ -632,191 +696,154 @@
             const temasActivos = state.temas.filter(t => !t.conversado);
             const temasCompletos = state.temas.filter(t => t.conversado);
 
-            if (temasActivos.length === 0) {
-                emptyStateCharlarEl.style.display = 'block';
-            } else {
-                emptyStateCharlarEl.style.display = 'none';
+            emptyStateCharlarEl.style.display = temasActivos.length === 0 ? 'block' : 'none';
+
+            temasActivos.forEach(tema => temasACharlarEl.appendChild(crearTemaItem(tema)));
+            temasCompletos.forEach(tema => temasConversadosEl.appendChild(crearTemaItem(tema)));
+        }
+
+        // === Drag & Drop con Pointer Events (robusto, sirve en desktop y táctil) ===
+        let drag = null;
+        const DRAG_THRESHOLD = 5;
+
+        function iniciarArrastre(e, tema, itemEl) {
+            // Solo botón primario; ignorar clicks en checkbox o botón eliminar
+            if (e.button !== 0) return;
+            if (e.target.closest('.tema-checkbox') || e.target.closest('.tema-remove')) return;
+
+            // Evita que el navegador inicie una selección de texto al arrastrar
+            e.preventDefault();
+
+            const rect = itemEl.getBoundingClientRect();
+            drag = {
+                tema,
+                itemEl,
+                startX: e.clientX,
+                startY: e.clientY,
+                offsetX: e.clientX - rect.left,
+                offsetY: e.clientY - rect.top,
+                width: rect.width,
+                started: false,
+                clone: null,
+                placeholder: null
+            };
+        }
+
+        function comenzarArrastreVisual(e) {
+            drag.started = true;
+            document.body.classList.add('dragging-active');
+
+            const clone = drag.itemEl.cloneNode(true);
+            clone.classList.add('drag-clone');
+            clone.style.width = drag.width + 'px';
+            clone.style.left = (e.clientX - drag.offsetX) + 'px';
+            clone.style.top = (e.clientY - drag.offsetY) + 'px';
+            document.body.appendChild(clone);
+            drag.clone = clone;
+
+            drag.itemEl.classList.add('drag-source');
+
+            const ph = document.createElement('div');
+            ph.className = 'drag-placeholder';
+            drag.placeholder = ph;
+        }
+
+        function listaBajoCursor(e) {
+            // Ocultar el clon para que elementFromPoint vea lo que hay debajo
+            drag.clone.style.display = 'none';
+            const el = document.elementFromPoint(e.clientX, e.clientY);
+            drag.clone.style.display = '';
+
+            if (el) {
+                if (el.closest('#temasConversados')) return temasConversadosEl;
+                if (el.closest('#temasACharlar')) return temasACharlarEl;
+            }
+            // Fallback: test por rectángulo (cubre zonas vacías de la lista)
+            const dentro = (elem) => {
+                const r = elem.getBoundingClientRect();
+                return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+            };
+            if (dentro(temasConversadosEl)) return temasConversadosEl;
+            if (dentro(temasACharlarEl)) return temasACharlarEl;
+            return null;
+        }
+
+        function indiceDestino(listaEl, clientY) {
+            const items = [...listaEl.querySelectorAll('.tema-item')].filter(x => x !== drag.itemEl);
+            for (let i = 0; i < items.length; i++) {
+                const r = items[i].getBoundingClientRect();
+                if (clientY < r.top + r.height / 2) return { idx: i, beforeEl: items[i] };
+            }
+            return { idx: items.length, beforeEl: null };
+        }
+
+        document.addEventListener('pointermove', (e) => {
+            if (!drag) return;
+
+            if (!drag.started) {
+                if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) < DRAG_THRESHOLD) return;
+                comenzarArrastreVisual(e);
             }
 
-            // Renderizar temas activos
-            temasActivos.forEach((tema, idx) => {
-                const realIdx = state.temas.indexOf(tema);
-                const li = document.createElement('div');
-                li.className = 'tema-item';
-                li.draggable = true;
-                li.innerHTML = `
-                    <input type="checkbox" class="tema-checkbox" />
-                    <span class="tema-text">${escapeHtml(tema.texto)}</span>
-                    <button class="tema-remove" aria-label="Eliminar">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                    </button>
-                `;
+            drag.clone.style.left = (e.clientX - drag.offsetX) + 'px';
+            drag.clone.style.top = (e.clientY - drag.offsetY) + 'px';
 
-                // Dragstart
-                li.addEventListener('dragstart', (e) => {
-                    e.dataTransfer.effectAllowed = 'move';
-                    e.dataTransfer.setData('text/plain', tema.texto);
-                    e.dataTransfer.setData('application/tema-idx', String(realIdx));
-                    setTimeout(() => li.classList.add('dragging'), 0);
-                });
+            temasACharlarEl.classList.remove('list-drop-active');
+            temasConversadosEl.classList.remove('list-drop-active');
 
-                // Dragend
-                li.addEventListener('dragend', () => {
-                    li.classList.remove('dragging');
-                    temasACharlarEl.querySelectorAll('.tema-item').forEach(x => x.classList.remove('drag-target-above','drag-target-below'));
-                });
+            const lista = listaBajoCursor(e);
+            if (!lista) {
+                if (drag.placeholder.parentNode) drag.placeholder.remove();
+                return;
+            }
+            lista.classList.add('list-drop-active');
+            const { beforeEl } = indiceDestino(lista, e.clientY);
+            if (beforeEl) lista.insertBefore(drag.placeholder, beforeEl);
+            else lista.appendChild(drag.placeholder);
+        });
 
-                // Dragover
-                li.addEventListener('dragover', (e) => {
-                    if (!e.dataTransfer.types.includes('application/tema-idx')) return;
-                    e.preventDefault();
-                    e.dataTransfer.dropEffect = 'move';
-                    temasACharlarEl.querySelectorAll('.tema-item').forEach(x => x.classList.remove('drag-target-above','drag-target-below'));
-                    const rect = li.getBoundingClientRect();
-                    li.classList.add(e.clientY < rect.top + rect.height/2 ? 'drag-target-above' : 'drag-target-below');
-                });
+        document.addEventListener('pointerup', (e) => {
+            if (!drag) return;
 
-                // Dragleave
-                li.addEventListener('dragleave', () => {
-                    li.classList.remove('drag-target-above','drag-target-below');
-                });
+            if (drag.started) {
+                const lista = listaBajoCursor(e);
+                if (lista) {
+                    const aConversados = (lista === temasConversadosEl);
+                    const { idx } = indiceDestino(lista, e.clientY);
+                    moverTema(drag.tema, aConversados, idx);
+                }
+                finalizarArrastre();
+                guardarDatos();
+                renderTemas();
+            } else {
+                finalizarArrastre();
+            }
+            drag = null;
+        });
 
-                // Drop
-                li.addEventListener('drop', (e) => {
-                    li.classList.remove('drag-target-above','drag-target-below');
-                    const srcIdxStr = e.dataTransfer.getData('application/tema-idx');
-                    if (srcIdxStr === '') return;
-                    e.stopPropagation();
-                    e.preventDefault();
-
-                    const srcIdx = parseInt(srcIdxStr, 10);
-                    if (isNaN(srcIdx) || srcIdx === realIdx) return;
-
-                    const rect = li.getBoundingClientRect();
-                    const insertBefore = e.clientY < rect.top + rect.height/2;
-
-                    const [moved] = state.temas.splice(srcIdx, 1);
-                    let targetIdx = (srcIdx < realIdx) ? realIdx - 1 : realIdx;
-                    if (!insertBefore) targetIdx += 1;
-                    state.temas.splice(targetIdx, 0, moved);
-
-                    guardarDatos();
-                    renderTemas();
-                });
-
-                // Checkbox
-                li.querySelector('.tema-checkbox').addEventListener('change', (e) => {
-                    tema.conversado = e.target.checked;
-                    guardarDatos();
-                    renderTemas();
-                });
-
-                // Remove
-                li.querySelector('.tema-remove').addEventListener('click', () => {
-                    state.temas = state.temas.filter(t => t.id !== tema.id);
-                    guardarDatos();
-                    renderTemas();
-                });
-
-                temasACharlarEl.appendChild(li);
-            });
-
-            // Renderizar temas conversados
-            temasCompletos.forEach((tema) => {
-                const realIdx = state.temas.indexOf(tema);
-                const li = document.createElement('div');
-                li.className = 'tema-item conversado';
-                li.draggable = true;
-                li.innerHTML = `
-                    <input type="checkbox" class="tema-checkbox" checked />
-                    <span class="tema-text">${escapeHtml(tema.texto)}</span>
-                    <button class="tema-remove" aria-label="Eliminar">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                    </button>
-                `;
-
-                // Dragstart
-                li.addEventListener('dragstart', (e) => {
-                    e.dataTransfer.effectAllowed = 'move';
-                    e.dataTransfer.setData('text/plain', tema.texto);
-                    e.dataTransfer.setData('application/tema-idx', String(realIdx));
-                    setTimeout(() => li.classList.add('dragging'), 0);
-                });
-
-                // Dragend
-                li.addEventListener('dragend', () => {
-                    li.classList.remove('dragging');
-                    temasConversadosEl.querySelectorAll('.tema-item').forEach(x => x.classList.remove('drag-target-above','drag-target-below'));
-                });
-
-                // Dragover
-                li.addEventListener('dragover', (e) => {
-                    if (!e.dataTransfer.types.includes('application/tema-idx')) return;
-                    e.preventDefault();
-                    e.dataTransfer.dropEffect = 'move';
-                    temasConversadosEl.querySelectorAll('.tema-item').forEach(x => x.classList.remove('drag-target-above','drag-target-below'));
-                    const rect = li.getBoundingClientRect();
-                    li.classList.add(e.clientY < rect.top + rect.height/2 ? 'drag-target-above' : 'drag-target-below');
-                });
-
-                // Dragleave
-                li.addEventListener('dragleave', () => {
-                    li.classList.remove('drag-target-above','drag-target-below');
-                });
-
-                // Drop
-                li.addEventListener('drop', (e) => {
-                    li.classList.remove('drag-target-above','drag-target-below');
-                    const srcIdxStr = e.dataTransfer.getData('application/tema-idx');
-                    if (srcIdxStr === '') return;
-                    e.stopPropagation();
-                    e.preventDefault();
-
-                    const srcIdx = parseInt(srcIdxStr, 10);
-                    if (isNaN(srcIdx) || srcIdx === realIdx) return;
-
-                    const rect = li.getBoundingClientRect();
-                    const insertBefore = e.clientY < rect.top + rect.height/2;
-
-                    const [moved] = state.temas.splice(srcIdx, 1);
-                    let targetIdx = (srcIdx < realIdx) ? realIdx - 1 : realIdx;
-                    if (!insertBefore) targetIdx += 1;
-                    state.temas.splice(targetIdx, 0, moved);
-
-                    guardarDatos();
-                    renderTemas();
-                });
-
-                // Checkbox
-                li.querySelector('.tema-checkbox').addEventListener('change', (e) => {
-                    tema.conversado = !e.target.checked;
-                    guardarDatos();
-                    renderTemas();
-                });
-
-                // Remove
-                li.querySelector('.tema-remove').addEventListener('click', () => {
-                    state.temas = state.temas.filter(t => t.id !== tema.id);
-                    guardarDatos();
-                    renderTemas();
-                });
-
-                temasConversadosEl.appendChild(li);
-            });
+        function finalizarArrastre() {
+            document.body.classList.remove('dragging-active');
+            temasACharlarEl.classList.remove('list-drop-active');
+            temasConversadosEl.classList.remove('list-drop-active');
+            if (drag.clone) drag.clone.remove();
+            if (drag.placeholder && drag.placeholder.parentNode) drag.placeholder.remove();
+            if (drag.itemEl) drag.itemEl.classList.remove('drag-source');
         }
 
-        // === Drag & Drop Global ===
-        function setupDragTargets() {
-            document.addEventListener('dragover', (e) => {
-                e.preventDefault();
-            });
+        function moverTema(tema, aConversados, insertIdx) {
+            let activos = state.temas.filter(t => !t.conversado && t !== tema);
+            let conversados = state.temas.filter(t => t.conversado && t !== tema);
+
+            tema.conversado = aConversados;
+            const destino = aConversados ? conversados : activos;
+
+            insertIdx = Math.max(0, Math.min(insertIdx, destino.length));
+            destino.splice(insertIdx, 0, tema);
+
+            state.temas = [...activos, ...conversados];
         }
+
+        function setupDragTargets() { /* listeners globales ya registrados arriba */ }
 
         // === Agregar Tema ===
         function agregarTema() {
