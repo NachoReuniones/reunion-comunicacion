@@ -706,6 +706,12 @@
         let drag = null;
         const DRAG_THRESHOLD = 5;
 
+        // Kill switch global: jamás dejamos que arranque el drag NATIVO del navegador.
+        // El drag nativo dispara 'dragstart' y CORTA los pointer events (pointerup nunca
+        // llega), que era exactamente la causa del bug. Cancelándolo, los pointer events
+        // siguen fluyendo y nuestro drag funciona siempre.
+        document.addEventListener('dragstart', (e) => e.preventDefault());
+
         function iniciarArrastre(e, tema, itemEl) {
             // Solo botón primario; ignorar clicks en checkbox o botón eliminar
             if (e.button !== 0) return;
@@ -714,10 +720,15 @@
             // Evita que el navegador inicie una selección de texto al arrastrar
             e.preventDefault();
 
+            // Captura el puntero para garantizar que pointermove/pointerup lleguen
+            // aunque el cursor salga del elemento o de la ventana.
+            try { itemEl.setPointerCapture(e.pointerId); } catch (err) {}
+
             const rect = itemEl.getBoundingClientRect();
             drag = {
                 tema,
                 itemEl,
+                pointerId: e.pointerId,
                 startX: e.clientX,
                 startY: e.clientY,
                 offsetX: e.clientX - rect.left,
@@ -818,6 +829,13 @@
             } else {
                 finalizarArrastre();
             }
+            drag = null;
+        });
+
+        // Si el gesto se cancela (ej. touch interrumpido), limpiar sin reordenar
+        document.addEventListener('pointercancel', () => {
+            if (!drag) return;
+            if (drag.started) finalizarArrastre();
             drag = null;
         });
 
