@@ -839,6 +839,42 @@
             drag = null;
         });
 
+        // === Diagnóstico opcional (agregar ?debug=1 a la URL) ===
+        if (location.search.includes('debug')) {
+            const box = document.createElement('div');
+            box.style.cssText = 'position:fixed;top:8px;right:8px;z-index:99999;background:#000;color:#0f0;font:12px/1.4 monospace;padding:10px;border-radius:8px;max-width:340px;white-space:pre-wrap;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.5)';
+            document.body.appendChild(box);
+            let pd = 0, pm = 0, pu = 0, ds = 0, lastDrop = '-', capture = '-';
+            const pintar = () => {
+                box.textContent =
+                    `pointerdown:${pd}  pointermove:${pm}  pointerup:${pu}\n` +
+                    `dragstart-nativo:${ds}\n` +
+                    `setPointerCapture:${capture}\n` +
+                    `lista-al-soltar:${lastDrop}\n` +
+                    `--- orden actual ---\n` +
+                    state.temas.map(t => (t.conversado ? '✓ ' : '• ') + t.texto).join('\n');
+            };
+            document.addEventListener('dragstart', () => { ds++; pintar(); }, true);
+            document.addEventListener('pointerdown', (e) => {
+                pd++;
+                const it = e.target.closest && e.target.closest('.tema-item');
+                if (it) { try { it.setPointerCapture(e.pointerId); capture = 'OK'; it.releasePointerCapture(e.pointerId); } catch (err) { capture = 'FALLO: ' + err.message; } }
+                pintar();
+            }, true);
+            document.addEventListener('pointermove', () => { pm++; pintar(); }, true);
+            document.addEventListener('pointerup', (e) => {
+                pu++;
+                if (drag && drag.started) {
+                    const l = listaBajoCursor(e);
+                    lastDrop = l === temasConversadosEl ? 'CONVERSADOS' : (l === temasACharlarEl ? 'A CHARLAR' : 'NULL (fuera)');
+                } else {
+                    lastDrop = 'sin-drag-activo';
+                }
+                setTimeout(pintar, 0);
+            }, true);
+            pintar();
+        }
+
         function finalizarArrastre() {
             document.body.classList.remove('dragging-active');
             temasACharlarEl.classList.remove('list-drop-active');
