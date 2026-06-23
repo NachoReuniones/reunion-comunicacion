@@ -504,6 +504,88 @@
             padding: 0 12px;
         }
 
+        /* === Barra de departamentos === */
+        .dept-bar {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 32px; background: var(--surface);
+            border-bottom: 1px solid var(--border); flex-wrap: wrap;
+        }
+        .dept-tabs { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+        .dept-tab {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 6px 14px; border-radius: var(--pill);
+            background: var(--bg); border: 1px solid var(--border);
+            color: var(--text-2); font-size: 12.5px; font-weight: 600;
+            font-family: inherit; cursor: pointer; transition: all .12s;
+        }
+        .dept-tab:hover { border-color: var(--border-strong); }
+        .dept-tab.active { background: var(--c-midnight); color: #fff; border-color: var(--c-midnight); }
+        [data-theme="dark"] .dept-tab.active { background: var(--c-misty-blue); border-color: var(--c-misty-blue); }
+        .dept-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .dept-manage {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 12px; border-radius: var(--pill);
+            background: transparent; border: 1px solid var(--border);
+            color: var(--muted); font-size: 12px; font-weight: 600;
+            font-family: inherit; cursor: pointer; transition: all .12s;
+        }
+        .dept-manage:hover { color: var(--text); border-color: var(--border-strong); background: var(--surface-hover); }
+
+        /* === Acciones de fecha === */
+        .fecha-actions { display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; }
+        .btn-save { background: var(--verde); color: #fff; }
+        .btn-save:hover { background: #256640; }
+
+        /* === Modales === */
+        .modal { position: fixed; inset: 0; z-index: 200; display: none; }
+        .modal.open { display: block; }
+        .modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.5); backdrop-filter: blur(3px); }
+        .modal-window {
+            position: relative; margin: 6vh auto; width: min(94vw, 540px);
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); box-shadow: 0 16px 48px rgba(0,0,0,.25);
+            max-height: 86vh; display: flex; flex-direction: column;
+        }
+        .modal-window-lg { width: min(94vw, 720px); }
+        .modal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 22px; border-bottom: 1px solid var(--border-soft);
+            font-size: 15px; font-weight: 700;
+        }
+        .modal-x { background: 0; border: 0; font-size: 22px; line-height: 1; color: var(--muted); cursor: pointer; }
+        .modal-x:hover { color: var(--text); }
+        .modal-body { padding: 18px 22px 22px; overflow-y: auto; }
+
+        .deptos-lista { display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; }
+        .depto-row { display: flex; align-items: center; gap: 10px; }
+        .depto-row .dept-dot { width: 10px; height: 10px; }
+        .depto-row input { flex: 1; }
+        .depto-row .btn-icon { background: transparent; border: 0; color: var(--muted); cursor: pointer; padding: 6px 9px; border-radius: var(--radius-xs); font-size: 16px; line-height: 1; }
+        .depto-row .btn-icon:hover { color: var(--rojo); background: var(--rojo-bg); }
+        .dept-add-row { display: flex; gap: 8px; padding-top: 14px; margin-top: 12px; border-top: 1px solid var(--border-soft); }
+        .dept-add-row input { flex: 1; }
+
+        .hist-grupo { margin-bottom: 18px; }
+        .hist-grupo-tit { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin-bottom: 8px; }
+        .hist-count { background: var(--accent-soft); color: var(--accent); border-radius: var(--pill); padding: 1px 8px; font-size: 10.5px; }
+        .hist-item { border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 8px; overflow: hidden; }
+        .hist-item-head { display: flex; align-items: center; gap: 12px; padding: 10px 14px; cursor: pointer; }
+        .hist-item-head:hover { background: var(--surface-hover); }
+        .hist-fecha { font-weight: 700; color: var(--text); font-size: 13px; }
+        .hist-when { font-size: 11px; color: var(--muted-2); }
+        .hist-del { margin-left: auto; background: transparent; border: 0; color: var(--muted); cursor: pointer; font-size: 18px; line-height: 1; padding: 2px 8px; border-radius: var(--radius-xs); }
+        .hist-del:hover { color: var(--rojo); background: var(--rojo-bg); }
+        .hist-detalle { display: none; padding: 6px 14px 14px; border-top: 1px solid var(--border-soft); font-size: 12.5px; }
+        .hist-item.open .hist-detalle { display: block; }
+        .hist-detalle h4 { font-size: 10.5px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin: 10px 0 4px; }
+        .hist-detalle ul { margin: 0; padding-left: 18px; color: var(--text-2); }
+        .hist-detalle p { margin: 0; white-space: pre-wrap; color: var(--text-2); }
+
+        .toast { position: fixed; bottom: 20px; right: 20px; background: var(--c-midnight); color: #fff; padding: 12px 20px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; z-index: 1000; box-shadow: 0 12px 28px rgba(0,0,0,.18); opacity: 0; transform: translateY(16px); transition: all .2s; pointer-events: none; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background: var(--verde); }
+        .toast.error { background: var(--rojo); }
+
         /* === Responsive === */
         @media (max-width: 768px) {
             .app-main {
@@ -514,9 +596,15 @@
                 padding: 0 16px;
             }
 
+            .dept-bar { padding: 10px 16px; }
+
             .layout-2col {
                 gap: 16px;
             }
+        }
+        @media (max-width: 600px) {
+            .fecha-section { flex-wrap: wrap; }
+            .fecha-actions { margin-left: 0; }
         }
     </style>
 </head>
@@ -524,7 +612,7 @@
     <div class="app-container">
         <!-- TOPBAR -->
         <header class="topbar">
-            <span class="topbar-title">Reunión de Comunicación</span>
+            <span class="topbar-title" id="topbarTitle">Reunión</span>
             <div class="topbar-actions">
                 <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
                     <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -544,6 +632,18 @@
                 </button>
             </div>
         </header>
+
+        <!-- BARRA DE DEPARTAMENTOS -->
+        <nav class="dept-bar">
+            <div class="dept-tabs" id="deptTabs"></div>
+            <button class="dept-manage" id="deptManageBtn" title="Administrar departamentos">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                Departamentos
+            </button>
+        </nav>
 
         <!-- MAIN CONTENT -->
         <main class="app-main">
@@ -608,6 +708,10 @@
                         <div class="fecha-section">
                             <span class="fecha-label">Fecha de la reunión:</span>
                             <input type="date" id="fechaReunion" />
+                            <div class="fecha-actions">
+                                <button class="btn btn-save" id="guardarReunionBtn">Guardar reunión</button>
+                                <button class="btn btn-secondary" id="verTodasBtn">Ver todas</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -615,14 +719,54 @@
         </main>
     </div>
 
+    <!-- MODAL: Administrar departamentos -->
+    <div class="modal" id="modalDeptos">
+        <div class="modal-backdrop" data-close></div>
+        <div class="modal-window">
+            <div class="modal-header"><span>Administrar departamentos</span><button class="modal-x" data-close>&times;</button></div>
+            <div class="modal-body">
+                <div id="deptosLista" class="deptos-lista"></div>
+                <div class="dept-add-row">
+                    <input type="text" id="nuevoDeptoInput" placeholder="Nuevo departamento..." />
+                    <button class="btn btn-primary" id="agregarDeptoBtn">+ Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Historial de reuniones -->
+    <div class="modal" id="modalHistorial">
+        <div class="modal-backdrop" data-close></div>
+        <div class="modal-window modal-window-lg">
+            <div class="modal-header"><span>Reuniones guardadas</span><button class="modal-x" data-close>&times;</button></div>
+            <div class="modal-body" id="histContenido"></div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
     <script>
-        // === Estado Global ===
-        const state = {
-            temas: [],
-            notas: '',
-            proximos: '',
-            fecha: new Date().toISOString().split('T')[0]
-        };
+        // === Modelo de estado (multi-departamento) ===
+        const STORAGE_KEY = 'lumi-reunion-v2';
+        const PALETA = ['#3E688F', '#2E7A4F', '#B07410', '#6d4aad', '#B33B3A', '#0C2136'];
+
+        function hoy() { return new Date().toISOString().split('T')[0]; }
+        function nuevoDepto() { return { temas: [], notas: '', proximos: '', fecha: hoy() }; }
+
+        function estadoInicial() {
+            return {
+                departamentos: [
+                    { id: 'ventas',       nombre: 'Ventas',       color: '#3E688F' },
+                    { id: 'directorio',   nombre: 'Directorio',   color: '#2E7A4F' },
+                    { id: 'comunicacion', nombre: 'Comunicación', color: '#B07410' }
+                ],
+                deptoActivo: 'comunicacion',
+                porDepto: { ventas: nuevoDepto(), directorio: nuevoDepto(), comunicacion: nuevoDepto() },
+                reuniones: []
+            };
+        }
+
+        let state = estadoInicial();
 
         // === Elementos DOM ===
         const temasACharlarEl = document.getElementById('temasACharlar');
@@ -634,31 +778,46 @@
         const nuevoTemaInput = document.getElementById('nuevoTemaInput');
         const agregarTemaBtn = document.getElementById('agregarTemaBtn');
         const themeToggle = document.getElementById('themeToggle');
+        const topbarTitle = document.getElementById('topbarTitle');
+        const deptTabsEl = document.getElementById('deptTabs');
 
-        // === LocalStorage ===
-        const STORAGE_KEY = 'lumi-reunion-data';
+        // Datos del departamento activo
+        function dd() { return state.porDepto[state.deptoActivo]; }
+        function deptoActivoObj() { return state.departamentos.find(d => d.id === state.deptoActivo) || state.departamentos[0]; }
 
+        // === Persistencia ===
         function guardarDatos() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-            } catch (e) {
-                console.warn('No se pudo guardar en localStorage', e);
-            }
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+            catch (e) { console.warn('No se pudo guardar en localStorage', e); }
+        }
+
+        function normalizar() {
+            if (!Array.isArray(state.departamentos) || !state.departamentos.length) state.departamentos = estadoInicial().departamentos;
+            if (!state.porDepto || typeof state.porDepto !== 'object') state.porDepto = {};
+            state.departamentos.forEach(d => { if (!state.porDepto[d.id]) state.porDepto[d.id] = nuevoDepto(); });
+            if (!Array.isArray(state.reuniones)) state.reuniones = [];
+            if (!state.porDepto[state.deptoActivo]) state.deptoActivo = state.departamentos[0].id;
+            Object.values(state.porDepto).forEach(dp => {
+                if (!Array.isArray(dp.temas)) dp.temas = [];
+                dp.temas.forEach(t => { if (t.id == null) t.id = Date.now() + Math.random(); });
+            });
         }
 
         function cargarDatos() {
             try {
-                const datos = localStorage.getItem(STORAGE_KEY);
-                if (datos) {
-                    const parsed = JSON.parse(datos);
-                    state.temas = parsed.temas || [];
-                    state.notas = parsed.notas || '';
-                    state.proximos = parsed.proximos || '';
-                    state.fecha = parsed.fecha || new Date().toISOString().split('T')[0];
+                const nuevo = localStorage.getItem(STORAGE_KEY);
+                if (nuevo) { state = JSON.parse(nuevo); normalizar(); return; }
+                // Migrar formato viejo (una sola reunión, era de Comunicación)
+                const viejo = localStorage.getItem('lumi-reunion-data');
+                if (viejo) {
+                    const p = JSON.parse(viejo);
+                    state.porDepto.comunicacion = {
+                        temas: p.temas || [], notas: p.notas || '', proximos: p.proximos || '', fecha: p.fecha || hoy()
+                    };
+                    state.deptoActivo = 'comunicacion';
                 }
-            } catch (e) {
-                console.warn('Error cargando datos', e);
-            }
+                normalizar();
+            } catch (e) { console.warn('Error cargando datos', e); normalizar(); }
         }
 
         // === Render ===
@@ -686,7 +845,7 @@
 
             // Eliminar
             li.querySelector('.tema-remove').addEventListener('click', () => {
-                state.temas = state.temas.filter(t => t.id !== tema.id);
+                dd().temas = dd().temas.filter(t => t.id !== tema.id);
                 guardarDatos();
                 renderTemas();
             });
@@ -701,8 +860,8 @@
             temasACharlarEl.innerHTML = '';
             temasConversadosEl.innerHTML = '';
 
-            const temasActivos = state.temas.filter(t => !t.conversado);
-            const temasCompletos = state.temas.filter(t => t.conversado);
+            const temasActivos = dd().temas.filter(t => !t.conversado);
+            const temasCompletos = dd().temas.filter(t => t.conversado);
 
             emptyStateCharlarEl.style.display = temasActivos.length === 0 ? 'block' : 'none';
 
@@ -914,7 +1073,7 @@
                     `setPointerCapture:${capture}\n` +
                     `lista-al-soltar:${lastDrop}\n` +
                     `--- orden actual ---\n` +
-                    state.temas.map(t => (t.conversado ? '✓ ' : '• ') + t.texto).join('\n');
+                    dd().temas.map(t => (t.conversado ? '✓ ' : '• ') + t.texto).join('\n');
             };
             document.addEventListener('dragstart', () => { ds++; pintar(); }, true);
             document.addEventListener('pointerdown', (e) => {
@@ -948,8 +1107,8 @@
         }
 
         function moverTema(tema, aConversados, insertIdx) {
-            let activos = state.temas.filter(t => !t.conversado && t !== tema);
-            let conversados = state.temas.filter(t => t.conversado && t !== tema);
+            let activos = dd().temas.filter(t => !t.conversado && t !== tema);
+            let conversados = dd().temas.filter(t => t.conversado && t !== tema);
 
             tema.conversado = aConversados;
             const destino = aConversados ? conversados : activos;
@@ -957,7 +1116,7 @@
             insertIdx = Math.max(0, Math.min(insertIdx, destino.length));
             destino.splice(insertIdx, 0, tema);
 
-            state.temas = [...activos, ...conversados];
+            dd().temas = [...activos, ...conversados];
         }
 
         function setupDragTargets() { /* listeners globales ya registrados arriba */ }
@@ -967,7 +1126,7 @@
             const texto = nuevoTemaInput.value.trim();
             if (!texto) return;
 
-            state.temas.push({
+            dd().temas.push({
                 id: Date.now() + Math.random(),
                 texto,
                 conversado: false
@@ -984,19 +1143,19 @@
             if (e.key === 'Enter') agregarTema();
         });
 
-        // === Notas Auto-save ===
+        // === Notas Auto-save (sobre el departamento activo) ===
         notasTextarea.addEventListener('input', () => {
-            state.notas = notasTextarea.value;
+            dd().notas = notasTextarea.value;
             guardarDatos();
         });
 
         proximosTextarea.addEventListener('input', () => {
-            state.proximos = proximosTextarea.value;
+            dd().proximos = proximosTextarea.value;
             guardarDatos();
         });
 
         fechaInput.addEventListener('change', () => {
-            state.fecha = fechaInput.value;
+            dd().fecha = fechaInput.value;
             guardarDatos();
         });
 
@@ -1018,13 +1177,206 @@
             return div.innerHTML;
         }
 
+        // === Departamentos: tabs y cambio ===
+        function renderTabs() {
+            deptTabsEl.innerHTML = '';
+            state.departamentos.forEach(dep => {
+                const b = document.createElement('button');
+                b.className = 'dept-tab' + (dep.id === state.deptoActivo ? ' active' : '');
+                b.innerHTML = `<span class="dept-dot" style="background:${dep.color}"></span>${escapeHtml(dep.nombre)}`;
+                b.addEventListener('click', () => switchDepto(dep.id));
+                deptTabsEl.appendChild(b);
+            });
+        }
+
+        function switchDepto(id) {
+            if (!state.porDepto[id]) state.porDepto[id] = nuevoDepto();
+            state.deptoActivo = id;
+            guardarDatos();
+            actualizarTitulo();
+            renderTabs();
+            sincronizarCampos();
+            renderTemas();
+        }
+
+        function actualizarTitulo() { topbarTitle.textContent = 'Reunión · ' + deptoActivoObj().nombre; }
+
+        function sincronizarCampos() {
+            notasTextarea.value = dd().notas || '';
+            proximosTextarea.value = dd().proximos || '';
+            fechaInput.value = dd().fecha || hoy();
+        }
+
+        // === Administrar departamentos ===
+        function nuevoIdDepto() { return 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); }
+
+        function renderDeptosLista() {
+            const cont = document.getElementById('deptosLista');
+            cont.innerHTML = '';
+            state.departamentos.forEach(dep => {
+                const row = document.createElement('div');
+                row.className = 'depto-row';
+                row.innerHTML = `<span class="dept-dot" style="background:${dep.color}"></span>
+                    <input type="text" value="${escapeHtml(dep.nombre)}" />
+                    <button class="btn-icon" title="Eliminar">&times;</button>`;
+                const input = row.querySelector('input');
+                input.addEventListener('input', () => {
+                    dep.nombre = input.value;
+                    guardarDatos(); renderTabs(); actualizarTitulo();
+                });
+                row.querySelector('.btn-icon').addEventListener('click', () => eliminarDepto(dep.id));
+                cont.appendChild(row);
+            });
+        }
+
+        function agregarDepto() {
+            const input = document.getElementById('nuevoDeptoInput');
+            const nombre = input.value.trim();
+            if (!nombre) return;
+            const id = nuevoIdDepto();
+            const color = PALETA[state.departamentos.length % PALETA.length];
+            state.departamentos.push({ id, nombre, color });
+            state.porDepto[id] = nuevoDepto();
+            input.value = '';
+            input.focus();
+            guardarDatos(); renderDeptosLista(); renderTabs();
+            toast('Departamento agregado', 'success');
+        }
+
+        function eliminarDepto(id) {
+            if (state.departamentos.length <= 1) { toast('Tiene que quedar al menos un departamento', 'error'); return; }
+            const dep = state.departamentos.find(d => d.id === id);
+            if (!confirm('¿Eliminar "' + dep.nombre + '"? Se borran sus temas pendientes (las reuniones guardadas se conservan).')) return;
+            state.departamentos = state.departamentos.filter(d => d.id !== id);
+            delete state.porDepto[id];
+            if (state.deptoActivo === id) state.deptoActivo = state.departamentos[0].id;
+            guardarDatos();
+            renderDeptosLista(); renderTabs(); actualizarTitulo(); sincronizarCampos(); renderTemas();
+        }
+
+        // === Guardar reunión (backlog inteligente) ===
+        function guardarReunion() {
+            const d = dd();
+            const hayAlgo = d.temas.length || (d.notas || '').trim() || (d.proximos || '').trim();
+            if (!hayAlgo) { toast('No hay nada para guardar todavía', 'error'); return; }
+            const dep = deptoActivoObj();
+            state.reuniones.unshift({
+                id: Date.now() + Math.random(),
+                deptoId: dep.id,
+                deptoNombre: dep.nombre,
+                fecha: d.fecha || hoy(),
+                guardadaEl: new Date().toISOString(),
+                notas: d.notas || '',
+                proximos: d.proximos || '',
+                temas: d.temas.map(t => ({ texto: t.texto, conversado: !!t.conversado }))
+            });
+            // Lo conversado se archiva; lo pendiente queda para la próxima; notas se limpian
+            d.temas = d.temas.filter(t => !t.conversado);
+            d.notas = '';
+            d.proximos = '';
+            d.fecha = hoy();
+            guardarDatos();
+            sincronizarCampos();
+            renderTemas();
+            toast('Reunión guardada en ' + dep.nombre, 'success');
+        }
+
+        // === Historial de reuniones ===
+        function formatFecha(s) {
+            if (!s) return '';
+            const d = new Date(s.length <= 10 ? s + 'T00:00:00' : s);
+            if (isNaN(d.getTime())) return s;
+            const p = n => String(n).padStart(2, '0');
+            let out = `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()}`;
+            if (s.length > 10) out += ` · ${p(d.getHours())}:${p(d.getMinutes())}`;
+            return out;
+        }
+
+        function renderHistorial() {
+            const cont = document.getElementById('histContenido');
+            if (!state.reuniones.length) {
+                cont.innerHTML = '<div class="empty-state">Todavía no guardaste ninguna reunión.</div>';
+                return;
+            }
+            const grupos = {};
+            state.reuniones.forEach(r => { (grupos[r.deptoId] = grupos[r.deptoId] || []).push(r); });
+
+            let html = '';
+            const renderGrupo = (nombre, color, rs) => {
+                html += `<div class="hist-grupo"><div class="hist-grupo-tit"><span class="dept-dot" style="background:${color || 'var(--muted)'}"></span>${escapeHtml(nombre)}<span class="hist-count">${rs.length}</span></div>`;
+                rs.forEach(r => {
+                    const tratados = (r.temas || []).filter(t => t.conversado);
+                    const pend = (r.temas || []).filter(t => !t.conversado);
+                    html += `<div class="hist-item" data-id="${r.id}">
+                        <div class="hist-item-head">
+                            <span class="hist-fecha">${formatFecha(r.fecha)}</span>
+                            <span class="hist-when">guardada ${formatFecha(r.guardadaEl)}</span>
+                            <button class="hist-del" data-del="${r.id}" title="Eliminar reunión">&times;</button>
+                        </div>
+                        <div class="hist-detalle">
+                            ${tratados.length ? `<h4>Temas tratados</h4><ul>${tratados.map(t => '<li>' + escapeHtml(t.texto) + '</li>').join('')}</ul>` : ''}
+                            ${pend.length ? `<h4>Quedaron pendientes</h4><ul>${pend.map(t => '<li>' + escapeHtml(t.texto) + '</li>').join('')}</ul>` : ''}
+                            <h4>Notas</h4><p>${r.notas ? escapeHtml(r.notas) : '—'}</p>
+                            <h4>Próximos pasos</h4><p>${r.proximos ? escapeHtml(r.proximos) : '—'}</p>
+                        </div>
+                    </div>`;
+                });
+                html += '</div>';
+            };
+
+            state.departamentos.forEach(dep => {
+                if (grupos[dep.id]) { renderGrupo(dep.nombre, dep.color, grupos[dep.id]); delete grupos[dep.id]; }
+            });
+            // Reuniones de departamentos ya eliminados
+            Object.keys(grupos).forEach(id => renderGrupo(grupos[id][0].deptoNombre || 'Archivados', null, grupos[id]));
+
+            cont.innerHTML = html;
+
+            cont.querySelectorAll('.hist-item-head').forEach(h => {
+                h.addEventListener('click', (e) => {
+                    if (e.target.closest('[data-del]')) return;
+                    h.parentNode.classList.toggle('open');
+                });
+            });
+            cont.querySelectorAll('[data-del]').forEach(b => {
+                b.addEventListener('click', () => {
+                    const id = b.getAttribute('data-del');
+                    state.reuniones = state.reuniones.filter(r => String(r.id) !== String(id));
+                    guardarDatos();
+                    renderHistorial();
+                });
+            });
+        }
+
+        // === Modales y toast ===
+        function abrirModal(id) { document.getElementById(id).classList.add('open'); }
+
+        let toastTimer;
+        function toast(msg, tipo) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast show' + (tipo ? ' ' + tipo : '');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => { t.className = 'toast'; }, 2600);
+        }
+
         // === Init ===
         cargarDatos();
-        notasTextarea.value = state.notas;
-        proximosTextarea.value = state.proximos;
-        fechaInput.value = state.fecha;
+        actualizarTitulo();
+        renderTabs();
+        sincronizarCampos();
         renderTemas();
         setupDragTargets();
+
+        // Wiring de botones y modales
+        document.getElementById('deptManageBtn').addEventListener('click', () => { renderDeptosLista(); abrirModal('modalDeptos'); });
+        document.getElementById('agregarDeptoBtn').addEventListener('click', agregarDepto);
+        document.getElementById('nuevoDeptoInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') agregarDepto(); });
+        document.getElementById('verTodasBtn').addEventListener('click', () => { renderHistorial(); abrirModal('modalHistorial'); });
+        document.getElementById('guardarReunionBtn').addEventListener('click', guardarReunion);
+        document.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', () => el.closest('.modal').classList.remove('open')));
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open')); });
+
         nuevoTemaInput.focus();
     </script>
 </body>
