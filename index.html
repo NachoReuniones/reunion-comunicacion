@@ -557,6 +557,8 @@
         .modal-body { padding: 18px 22px 22px; overflow-y: auto; }
         .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
         #nombreReunionInput { width: 100%; }
+        .modal-check { display: flex; align-items: center; gap: 9px; margin-top: 14px; font-size: 12.5px; color: var(--text-2); cursor: pointer; }
+        .modal-check input { width: 16px; height: 16px; cursor: pointer; accent-color: var(--verde); flex-shrink: 0; }
 
         .deptos-lista { display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; }
         .depto-row { display: flex; align-items: center; gap: 10px; }
@@ -753,6 +755,10 @@
             <div class="modal-body">
                 <label class="fecha-label" for="nombreReunionInput" style="display:block;margin-bottom:8px">Nombre de la reunión (opcional)</label>
                 <input type="text" id="nombreReunionInput" placeholder="Ej: Reunión semanal, Cierre de mes..." />
+                <label class="modal-check" for="mantenerProximosCheck">
+                    <input type="checkbox" id="mantenerProximosCheck" />
+                    <span>Mantener los próximos pasos para la próxima reunión</span>
+                </label>
                 <div class="modal-actions">
                     <button class="btn btn-secondary" data-close>Cancelar</button>
                     <button class="btn btn-save" id="confirmarGuardarBtn">Guardar</button>
@@ -1283,6 +1289,7 @@
             if (!hayAlgoParaGuardar()) { toast('No hay nada para guardar todavía', 'error'); return; }
             const input = document.getElementById('nombreReunionInput');
             input.value = '';
+            document.getElementById('mantenerProximosCheck').checked = false;
             abrirModal('modalGuardar');
             setTimeout(() => input.focus(), 50);
         }
@@ -1290,11 +1297,12 @@
         // Paso 2: confirmar con el nombre escrito
         function confirmarGuardarReunion() {
             const nombre = document.getElementById('nombreReunionInput').value;
+            const mantenerProximos = document.getElementById('mantenerProximosCheck').checked;
             document.getElementById('modalGuardar').classList.remove('open');
-            guardarReunion(nombre);
+            guardarReunion(nombre, mantenerProximos);
         }
 
-        function guardarReunion(nombre) {
+        function guardarReunion(nombre, mantenerProximos) {
             const d = dd();
             if (!hayAlgoParaGuardar()) { toast('No hay nada para guardar todavía', 'error'); return; }
             const dep = deptoActivoObj();
@@ -1312,7 +1320,7 @@
             // Lo conversado se archiva; lo pendiente queda para la próxima; notas se limpian
             d.temas = d.temas.filter(t => !t.conversado);
             d.notas = '';
-            d.proximos = '';
+            if (!mantenerProximos) d.proximos = '';
             d.fecha = hoy();
             guardarDatos();
             sincronizarCampos();
