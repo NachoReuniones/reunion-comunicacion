@@ -60,6 +60,9 @@
             --verde:            #2E7A4F;
             --verde-bg:         #E8F4ED;
             --verde-border:     #B8DCC4;
+            --rojo:             #B33B3A;
+            --rojo-bg:          #FDECEC;
+            --rojo-border:      #F5C9C8;
 
             /* Tipografía */
             --font: "Inter", ui-sans-serif, -apple-system, BlinkMacSystemFont,
@@ -93,6 +96,9 @@
 
             --verde:            #62B689;
             --verde-bg:         rgba(46, 122, 79, .16);
+            --rojo:             #E07D7C;
+            --rojo-bg:          rgba(179, 59, 58, .16);
+            --rojo-border:      rgba(179, 59, 58, .35);
         }
 
         /* === Reset & Base === */
@@ -568,6 +574,14 @@
         .depto-row .btn-icon:hover { color: var(--rojo); background: var(--rojo-bg); }
         .dept-add-row { display: flex; gap: 8px; padding-top: 14px; margin-top: 12px; border-top: 1px solid var(--border-soft); }
         .dept-add-row input { flex: 1; }
+
+        .hist-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-soft); }
+        .hist-toolbar .sel-info { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); cursor: pointer; }
+        .btn-danger { background: var(--rojo-bg); color: var(--rojo); border: 1px solid var(--rojo-border); border-radius: var(--pill); padding: 7px 14px; font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all .12s; }
+        .btn-danger:hover { background: var(--rojo); color: #fff; }
+        .btn-danger[disabled] { opacity: .4; cursor: default; }
+        .btn-danger[disabled]:hover { background: var(--rojo-bg); color: var(--rojo); }
+        .hist-check { width: 16px; height: 16px; cursor: pointer; accent-color: var(--rojo); flex-shrink: 0; }
 
         .hist-grupo { margin-bottom: 18px; }
         .hist-grupo-tit { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin-bottom: 8px; }
@@ -1348,7 +1362,12 @@
             const grupos = {};
             state.reuniones.forEach(r => { (grupos[r.deptoId] = grupos[r.deptoId] || []).push(r); });
 
-            let html = '';
+            // Barra de selección
+            let html = `<div class="hist-toolbar">
+                <label class="sel-info"><input type="checkbox" class="hist-check" id="histSelAll"> Seleccionar todas (${state.reuniones.length})</label>
+                <button class="btn-danger" id="histDelSel" disabled>Eliminar seleccionadas</button>
+            </div>`;
+
             const renderGrupo = (nombre, color, rs) => {
                 html += `<div class="hist-grupo"><div class="hist-grupo-tit"><span class="dept-dot" style="background:${color || 'var(--muted)'}"></span>${escapeHtml(nombre)}<span class="hist-count">${rs.length}</span></div>`;
                 rs.forEach(r => {
@@ -1356,9 +1375,9 @@
                     const pend = (r.temas || []).filter(t => !t.conversado);
                     html += `<div class="hist-item" data-id="${r.id}">
                         <div class="hist-item-head">
+                            <input type="checkbox" class="hist-check" data-sel="${r.id}" title="Seleccionar">
                             <span class="hist-fecha">${r.nombre ? escapeHtml(r.nombre) : formatFecha(r.fecha)}</span>
                             <span class="hist-when">${r.nombre ? formatFecha(r.fecha) + ' · ' : ''}guardada ${formatFecha(r.guardadaEl)}</span>
-                            <button class="hist-del" data-del="${r.id}" title="Eliminar reunión">&times;</button>
                         </div>
                         <div class="hist-detalle">
                             ${tratados.length ? `<h4>Temas tratados</h4><ul>${tratados.map(t => '<li>' + escapeHtml(t.texto) + '</li>').join('')}</ul>` : ''}
@@ -1379,19 +1398,38 @@
 
             cont.innerHTML = html;
 
+            const checks = () => [...cont.querySelectorAll('input[data-sel]')];
+            const btnDel = document.getElementById('histDelSel');
+            const selAll = document.getElementById('histSelAll');
+
+            function actualizarBarra() {
+                const sel = checks().filter(c => c.checked);
+                btnDel.disabled = sel.length === 0;
+                btnDel.textContent = sel.length ? `Eliminar seleccionadas (${sel.length})` : 'Eliminar seleccionadas';
+                selAll.checked = sel.length > 0 && sel.length === checks().length;
+            }
+
+            // Expandir detalle al clickear la fila (salvo el checkbox)
             cont.querySelectorAll('.hist-item-head').forEach(h => {
                 h.addEventListener('click', (e) => {
-                    if (e.target.closest('[data-del]')) return;
+                    if (e.target.closest('input[data-sel]')) return;
                     h.parentNode.classList.toggle('open');
                 });
             });
-            cont.querySelectorAll('[data-del]').forEach(b => {
-                b.addEventListener('click', () => {
-                    const id = b.getAttribute('data-del');
-                    state.reuniones = state.reuniones.filter(r => String(r.id) !== String(id));
-                    guardarDatos();
-                    renderHistorial();
-                });
+            checks().forEach(c => {
+                c.addEventListener('click', (e) => e.stopPropagation());
+                c.addEventListener('change', actualizarBarra);
+            });
+            selAll.addEventListener('change', () => { checks().forEach(c => c.checked = selAll.checked); actualizarBarra(); });
+
+            btnDel.addEventListener('click', () => {
+                const ids = new Set(checks().filter(c => c.checked).map(c => c.getAttribute('data-sel')));
+                if (!ids.size) return;
+                if (!confirm(`¿Eliminar ${ids.size} reunión(es) seleccionada(s)? No se puede deshacer.`)) return;
+                state.reuniones = state.reuniones.filter(r => !ids.has(String(r.id)));
+                guardarDatos();
+                renderHistorial();
+                toast('Reuniones eliminadas', 'success');
             });
         }
 
