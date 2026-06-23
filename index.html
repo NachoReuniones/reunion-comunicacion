@@ -555,6 +555,8 @@
         .modal-x { background: 0; border: 0; font-size: 22px; line-height: 1; color: var(--muted); cursor: pointer; }
         .modal-x:hover { color: var(--text); }
         .modal-body { padding: 18px 22px 22px; overflow-y: auto; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+        #nombreReunionInput { width: 100%; }
 
         .deptos-lista { display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; }
         .depto-row { display: flex; align-items: center; gap: 10px; }
@@ -740,6 +742,22 @@
         <div class="modal-window modal-window-lg">
             <div class="modal-header"><span>Reuniones guardadas</span><button class="modal-x" data-close>&times;</button></div>
             <div class="modal-body" id="histContenido"></div>
+        </div>
+    </div>
+
+    <!-- MODAL: Guardar reunión (nombre) -->
+    <div class="modal" id="modalGuardar">
+        <div class="modal-backdrop" data-close></div>
+        <div class="modal-window" style="width:min(94vw,440px)">
+            <div class="modal-header"><span>Guardar reunión</span><button class="modal-x" data-close>&times;</button></div>
+            <div class="modal-body">
+                <label class="fecha-label" for="nombreReunionInput" style="display:block;margin-bottom:8px">Nombre de la reunión (opcional)</label>
+                <input type="text" id="nombreReunionInput" placeholder="Ej: Reunión semanal, Cierre de mes..." />
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" data-close>Cancelar</button>
+                    <button class="btn btn-save" id="confirmarGuardarBtn">Guardar</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1255,15 +1273,36 @@
         }
 
         // === Guardar reunión (backlog inteligente) ===
-        function guardarReunion() {
+        function hayAlgoParaGuardar() {
             const d = dd();
-            const hayAlgo = d.temas.length || (d.notas || '').trim() || (d.proximos || '').trim();
-            if (!hayAlgo) { toast('No hay nada para guardar todavía', 'error'); return; }
+            return d.temas.length || (d.notas || '').trim() || (d.proximos || '').trim();
+        }
+
+        // Paso 1: pedir el nombre (opcional) en un modal
+        function pedirNombreReunion() {
+            if (!hayAlgoParaGuardar()) { toast('No hay nada para guardar todavía', 'error'); return; }
+            const input = document.getElementById('nombreReunionInput');
+            input.value = '';
+            abrirModal('modalGuardar');
+            setTimeout(() => input.focus(), 50);
+        }
+
+        // Paso 2: confirmar con el nombre escrito
+        function confirmarGuardarReunion() {
+            const nombre = document.getElementById('nombreReunionInput').value;
+            document.getElementById('modalGuardar').classList.remove('open');
+            guardarReunion(nombre);
+        }
+
+        function guardarReunion(nombre) {
+            const d = dd();
+            if (!hayAlgoParaGuardar()) { toast('No hay nada para guardar todavía', 'error'); return; }
             const dep = deptoActivoObj();
             state.reuniones.unshift({
                 id: Date.now() + Math.random(),
                 deptoId: dep.id,
                 deptoNombre: dep.nombre,
+                nombre: (nombre || '').trim(),
                 fecha: d.fecha || hoy(),
                 guardadaEl: new Date().toISOString(),
                 notas: d.notas || '',
@@ -1309,8 +1348,8 @@
                     const pend = (r.temas || []).filter(t => !t.conversado);
                     html += `<div class="hist-item" data-id="${r.id}">
                         <div class="hist-item-head">
-                            <span class="hist-fecha">${formatFecha(r.fecha)}</span>
-                            <span class="hist-when">guardada ${formatFecha(r.guardadaEl)}</span>
+                            <span class="hist-fecha">${r.nombre ? escapeHtml(r.nombre) : formatFecha(r.fecha)}</span>
+                            <span class="hist-when">${r.nombre ? formatFecha(r.fecha) + ' · ' : ''}guardada ${formatFecha(r.guardadaEl)}</span>
                             <button class="hist-del" data-del="${r.id}" title="Eliminar reunión">&times;</button>
                         </div>
                         <div class="hist-detalle">
@@ -1373,7 +1412,9 @@
         document.getElementById('agregarDeptoBtn').addEventListener('click', agregarDepto);
         document.getElementById('nuevoDeptoInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') agregarDepto(); });
         document.getElementById('verTodasBtn').addEventListener('click', () => { renderHistorial(); abrirModal('modalHistorial'); });
-        document.getElementById('guardarReunionBtn').addEventListener('click', guardarReunion);
+        document.getElementById('guardarReunionBtn').addEventListener('click', pedirNombreReunion);
+        document.getElementById('confirmarGuardarBtn').addEventListener('click', confirmarGuardarReunion);
+        document.getElementById('nombreReunionInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') confirmarGuardarReunion(); });
         document.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', () => el.closest('.modal').classList.remove('open')));
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open')); });
 
