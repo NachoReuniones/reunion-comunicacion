@@ -383,6 +383,14 @@
             color: var(--muted-2);
         }
 
+        #notasTextarea, #proximosTextarea {
+            width: 100%;
+            resize: vertical;
+            line-height: 1.55;
+        }
+        #notasTextarea { min-height: 320px; }
+        #proximosTextarea { min-height: 240px; }
+
         input[type="text"]:focus, textarea:focus {
             outline: none;
             background: var(--surface);
@@ -717,9 +725,6 @@
                             <span class="card-title">Notas de la reunión</span>
                         </div>
                         <div class="card-body">
-                            <div class="editor-toolbar">
-                                <strong>Tips:</strong> Escribe libremente. Los cambios se guardan automáticamente.
-                            </div>
                             <textarea id="notasTextarea" placeholder="Comentarios, observaciones, contexto..."></textarea>
                         </div>
                     </div>
